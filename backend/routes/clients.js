@@ -48,7 +48,7 @@ router.route('/logIn').post(async(req,res)=>{
     let client =await Client.findOne({"email":email})
     
     if(client) res.json(client)
-    else res.json("afin ghadi")
+    else  res.status(404).send({message:"invalide client "})
 })
 
 
