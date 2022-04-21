@@ -1,76 +1,29 @@
-import React,{useState} from 'react'
-import {StyleSheet,View,Image,Pressable,TextInput,TouchableOpacity,Text} from 'react-native';
+import React,{ useState } from 'react'
+import {StyleSheet,View,Image,Pressable,TextInput,Text,TouchableOpacity} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
-import ip from '../helpers/Ip';
-import * as Google from 'expo-google-app-auth'
 
-import axios  from 'axios';
-
-
-const Login=()=> {
-    const navigate = useNavigation();
-    const [isSecureEntry,setSecureEntry]=useState(true);
-
-    const [email,useEmail]=useState("")
-    const [pwd,usePwd]=useState("")
-
-    const SignIn=(e)=>{
-        e.preventDefault();
-        const user={
-            email:email,
-            pass:pwd
-        }
-         axios.post(ip+"/clients/logEmailPwd",user)
-        .then(res=>alert(res.data))
-        .catch(err=>console.log(err))
-       
- 
-    }
-
-    const SignInWithGoogle=async()=>{
-        const result=await Google.logInAsync({
-            androidClientId:"378979646433-pk1t3egfjms74ev843ep8cjksgg0lso8.apps.googleusercontent.com",
-            iosClientId:"378979646433-lcls7a11ihnf5ge82roei2c5dr15flgd.apps.googleusercontent.com",
-            scope:["profile","email"]
-        });
-
-        if(result.type="success"){
-           const user={
-               email:result.user.email
-           }
-           await axios.post(ip+"/clients/logIn",user)
-           .then(res=>console.log(res.data))
-           .catch(err=>alert(err))
-
-        }
-
-    }
-
+const Register=()=> {
+  const navigate = useNavigation();
+  const [isSecureEntry,setSecureEntry]=useState(true);
   return (
     <View style={styles.container}>
-
-        {/*head*/}
         <View style={styles.nav}>
             <TouchableOpacity onPress={()=>navigate.navigate("Main", { repo: 'item' })}>
                 <Image style={styles.icon} source={require('../assets/backbold.png')}/>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>navigate.navigate("Register", { repo: 'item' })}>
-                <Text style={styles.reg}>Register</Text>
+            <TouchableOpacity onPress={()=>navigate.navigate("Login", { repo: 'item' })}>
+                <Text style={styles.sign}>Sign in</Text>
             </TouchableOpacity>
         </View>
-        {/*Title*/}
         <View style={styles.desc}>
-            <Text style={styles.title}>Sign In</Text>
+            <Text style={styles.title}>Sign Up</Text>
             <Text style={styles.parag}>Lorem ipsum dollor sit ammet, consectetur {"\n"}adipiscing elit, sed do tempor</Text>
         </View>
         <View style={styles.main}>
-            <TextInput style={styles.input} 
-                placeholder="Email" value={email}
-                onChangeText={(text)=>useEmail(text)}
-            />
-
+            <TextInput style={styles.input} placeholder="Username"/>
+            <TextInput style={styles.input} placeholder="Email"/>
             <View style={[styles.input,styles.passwd]}>
-                <TextInput secureTextEntry={isSecureEntry} value={pwd} onChangeText={(text)=>usePwd(text)} placeholder="Password"/>
+                <TextInput secureTextEntry={isSecureEntry} placeholder="Password"/>
                 <TouchableOpacity
                         style={{position:'absolute',left:'95%'}}
                         onPress={()=>{
@@ -82,11 +35,13 @@ const Login=()=> {
                         }
                     </TouchableOpacity>
             </View>
-            <Text style={styles.forgot}>Forgot Password?</Text>
-            <Pressable style={styles.btnSignIn} onPress={SignIn}>
-                <Text style={{color:'white'}}>Sign In</Text>
+            <TouchableOpacity onPress={()=>navigate.navigate("Login", { repo: 'item' })}>
+                <Text style={styles.haveacc}>already have an account?</Text>
+            </TouchableOpacity>
+            <Pressable style={styles.btnSignIn} onPress={()=>null}>
+                <Text style={{color:'white'}}>Sign Up</Text>
             </Pressable>
-            <Pressable style={[styles.button, {marginTop:50}]} onPress={SignInWithGoogle}>
+            <Pressable style={[styles.button, {marginTop:0}]} onPress={()=>null}>
                 <Image style={[styles.icon, {marginRight:0}]} source={require('../assets/google.png')}/>
                 <Text style={styles.txtbutton}>Continue with Google</Text>
                 <Image style={[styles.icon, {marginRight:0}]} source={require('../assets/flech.png')}/>
@@ -110,7 +65,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         marginTop:60
       },
-      reg:{
+      sign:{
         fontWeight:'bold',
         fontSize:16
       },
@@ -148,10 +103,11 @@ const styles = StyleSheet.create({
             borderRadius:30,
             paddingStart:30
         },
-        forgot:{
+        haveacc:{
             marginTop:8,
             marginStart:'46%',
-            fontSize:13
+            fontSize:13,
+            marginEnd:24
         },
         btnSignIn:{
             backgroundColor:'black',
@@ -179,9 +135,9 @@ const styles = StyleSheet.create({
             marginRight:25
         },
         passwd:{
-            flexDirection:'row',
-            alignContent:'center',
-            alignItems:'center'
-        }
+          flexDirection:'row',
+          alignContent:'center',
+          alignItems:'center'
+      }
 });
-export default Login;
+export default Register;

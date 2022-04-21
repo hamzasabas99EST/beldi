@@ -24,9 +24,9 @@ router.route('/add').post(async(req,res)=>{
 
 router.route('/logEmailPwd').post(async(req,res)=>{
 
-    let name=req.body.name
+    let email=req.body.email
     let pwd=req.body.pass
-    let client=await Client.findOne({'name':name})
+    let client=await Client.findOne({'email':email})
 
     if(client){
         
