@@ -14,7 +14,7 @@ const Login=()=> {
     const SignIn=(e)=>{
         e.preventDefault();
         const user={
-            name:email,
+            email:email,
             pass:pwd
         }
          axios.post(ip+"/clients/logEmailPwd",user)
