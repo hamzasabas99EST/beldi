@@ -24,9 +24,9 @@ router.route('/add').post(async(req,res)=>{
 
 router.route('/logEmailPwd').post(async(req,res)=>{
 
-    let name=req.body.name
+    let email=req.body.email
     let pwd=req.body.pass
-    let client=await Client.findOne({'name':name})
+    let client=await Client.findOne({'email':email})
 
     if(client){
         
@@ -92,12 +92,19 @@ router.route('/CodeConfirmation').post(async(req,res)=>{
       
 })
 
-router.route('/ActivateAccount').post(async(req,res)=>{
+/*router.route('/ActivateAccount').post(async(req,res)=>{
 
     let email=req.body.email
     Client.findOneAndUpdate({email:email},activated=true)
 
 
+})*/
+
+router.route("/getClient/:id").get(async(req,res)=>{
+  let id=req.params.id
+  Client.findById(id)
+  .then(client=>res.json(client))
+  .catch(err=>res.status(404).send({message:"Client introuvable"}))
 })
 
 
