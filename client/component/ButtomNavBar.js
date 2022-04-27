@@ -18,7 +18,7 @@ const Tab = createBottomTabNavigator();
 
 function ButtomNavBar() {
   return (
-      <Tab.Navigator
+    <Tab.Navigator
         initialRouteName={homeName}
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -41,26 +41,27 @@ function ButtomNavBar() {
             // You can return any component that you like here!
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          headerShown: false
-        })}
-        tabBarOptions={{
-          activeTintColor: '#f9ba07',
-          inactiveTintColor: 'grey',
+          headerShown: false,
+          tabBarActiveTintColor: '#f9ba07',
+          tabBarInactiveTintColor: 'grey',
           labelStyle: { paddingBottom: 4, fontSize: 10 },
-          tabBarStyle:[
+          tabBarStyle: [
             {
-              display:'flex'
+              display: 'flex'
             },
             null
           ]
-        }}>
+          
+        })}
+       
+      >
 
-        <Tab.Screen name={homeName} component={HomeScreen} />
-        <Tab.Screen name={trackName} component={TrackScreen} />
-        <Tab.Screen name={orderName} component={OrderScreen} />
-        <Tab.Screen name={profileName} component={ProfileScreen} />
+      <Tab.Screen name={homeName} component={HomeScreen} />
+      <Tab.Screen name={trackName} component={TrackScreen} />
+      <Tab.Screen name={orderName} component={OrderScreen} />
+      <Tab.Screen name={profileName} component={ProfileScreen} />
 
-      </Tab.Navigator>
+    </Tab.Navigator>
   );
 }
 

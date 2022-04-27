@@ -11,7 +11,7 @@ const Main=()=> {
             <Text style={styles.title}>Welcome</Text>
             <Text style={styles.parag}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Text>
             <View style={styles.btncontainer}>
-                <Pressable style={styles.btnSignIn} onPress={()=>navigate.navigate("Login", { repo: 'item' })}>
+                <Pressable style={styles.btnSignIn} onPress={()=>navigate.navigate("Login")}>
                     <Text style={{color:'white'}}>Sign In</Text>
                 </Pressable>
                 <Pressable style={[styles.btnSignIn,{backgroundColor:'#fffeff'}]} onPress={()=>navigate.navigate("Register", { repo: 'item' })}>
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     main:{
         backgroundColor:'#f9ba07',
         width:'100%',
-        height:'50%',
+        height:'70%',
         borderRadius:40,
         paddingTop:50,
         paddingStart:20,
@@ -54,13 +54,13 @@ const styles = StyleSheet.create({
     },
     btncontainer:{
         flexDirection:'row',
-        marginTop:60,
+        marginTop:50,
         justifyContent:'space-between'
     },
     image:{
         width:60,
         height:60,
-        marginTop:'100%'
+        marginTop:'80%'
     }
 });
 export default Main;

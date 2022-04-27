@@ -8,7 +8,7 @@ let nodemailer=require('nodemailer');
 
 router.route('/add').post(async(req,res)=>{
         
-       let password=await bcrypt.hash(req.body.pass,10);
+       let password=await bcrypt.hash(req.body.pass,15);
        let name=req.body.name
        let email=req.body.email
        const newClient=new Client({
@@ -32,7 +32,7 @@ router.route('/logEmailPwd').post(async(req,res)=>{
         
         let check= await bcrypt.compare(pwd,client.password)
     
-        if(check) res.json("yeah")
+        if(check) res.json(client._id)
 
         else res.status(404).send({message:"mot de passe incorrect "})
 
@@ -75,10 +75,14 @@ router.route('/CodeConfirmation').post(async(req,res)=>{
     }
   }); 
 
+    let email=req.body.email
+    const client=await Client.findOne({"email":email})
 
-   var mailOption=await {
+    if(!client) res.status(404).send({message:"Client Introuvable"})
+    else {
+      var mailOption=await {
         from:'beldi.ensas@gmail.com',
-        to:"hamzasabas99@gmail.com",
+        to:client.email,
         subject:'Code de confirmation',
         html:'Merci pour Choisir notre application voici votre code du confirmation : <h1>'+code_activation+'</h1>'
         
@@ -86,19 +90,25 @@ router.route('/CodeConfirmation').post(async(req,res)=>{
       transporter.sendMail(mailOption,function(error,info){
         if(error){
           res.json("fin ghadi"+error)
-        }else res.json("L'email est envoyé")
+        }else res.json({code:code_activation,message:"Consulter votre email"})
       })
+     
+    }
+  
 
       
 })
 
-/*router.route('/ActivateAccount').post(async(req,res)=>{
+router.route('/UpdatePwd').post(async(req,res)=>{
 
     let email=req.body.email
-    Client.findOneAndUpdate({email:email},activated=true)
+    let pass=req.body.pass
+    Client.findOneAndUpdate({email:email},password=pass)
+    .then(()=>res.json("Mot de passe bien modifié"))
+    .catch(err=>res.json("Erreur dans l'operation "))
 
 
-})*/
+})
 
 router.route("/getClient/:id").get(async(req,res)=>{
   let id=req.params.id
