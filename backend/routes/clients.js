@@ -102,8 +102,8 @@ router.route('/CodeConfirmation').post(async(req,res)=>{
 router.route('/UpdatePwd').post(async(req,res)=>{
 
     let email=req.body.email
-    let pass=req.body.pass
-    Client.findOneAndUpdate({email:email},password=pass)
+    let pass=await bcrypt.hash(req.body.pass,15);
+    Client.findOneAndUpdate({'email':email},{'password':pass})
     .then(()=>res.json("Mot de passe bien modifié"))
     .catch(err=>res.json("Erreur dans l'operation "))
 
