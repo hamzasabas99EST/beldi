@@ -43,7 +43,8 @@ const Register = ({navigation}) => {
                         }
                         axios.post(ip + "/add", client)
                             .then(res => {
-                                navigation.navigate("Login", { msgParam: "Votre compte a été bien créer" })
+                                init()
+                                navigation.push("Login", { msgParam: "Votre compte a été bien créer" })
                             })
                             .catch(err => console.log(err))
                     }
@@ -85,14 +86,23 @@ const Register = ({navigation}) => {
 
 
     }
+
+    const init=()=>{
+        setEmail("")
+        setName("")
+        setLoaded(false)
+        setPwd("")
+        setMessage("")
+    }
+
     return (
         <View style={styles.container}>
 
             <View style={styles.nav}>
-                <TouchableOpacity onPress={() => navigation.navigate("Main", { repo: 'item' })}>
+                <TouchableOpacity onPress={() => navigation.navigate("Main")}>
                     <Image style={styles.icon} source={require('../assets/backbold.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate("Login", { repo: 'item' })}>
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.sign}>Sign in</Text>
                 </TouchableOpacity>
             </View>
@@ -151,7 +161,7 @@ const Register = ({navigation}) => {
                 </TouchableOpacity>
 
                 {/* Pour créer nouveau client */}
-                <Pressable style={styles.btnSignIn} onPress={newClient}>
+                <Pressable style={styles.btnSignIn} onPress={newClient} disabled={isLoaded}>
                     {!isLoaded ? <Text style={{ color: 'white' }}>Sign Up</Text>
                         : <Spinner color={"#ffffff"} />
                     }

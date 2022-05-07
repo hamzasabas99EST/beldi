@@ -8,8 +8,8 @@ import validator from 'validator';
 import axios from 'axios';
 
 
-const ResetPwd = ({navigation}) => {
-  
+const ResetPwd = ({ navigation }) => {
+
 
     const [email, setEmail] = useState("")
     const [code, setCode] = useState("")
@@ -23,6 +23,9 @@ const ResetPwd = ({navigation}) => {
 
     //Pour disable l'input de code 
     const [etat, setEtat] = useState(false)
+
+    // 
+    const [err,setErr]=useState(false)
     const [message, setMessage] = useState("")
 
 
@@ -47,14 +50,15 @@ const ResetPwd = ({navigation}) => {
                     })
                     .catch(err => {
                         setLoaded(false)
-                        setTmpCode("aa")
+                        setErr(true)
                         setMessage(err.response.data.message)
                     })
             } else {
                 if (tempCode != code) {
+                    setErr(true)
                     setLoaded(false)
                     setMessage("le code ne correspond pas ")
-                    console.log(tempCode != code)
+
 
                 }
                 else
@@ -66,11 +70,20 @@ const ResetPwd = ({navigation}) => {
 
 
     }
-    const checkEmail=(text)=>{
+    const checkEmail = (text) => {
         setEmail(text)
-        if(validator.isEmail(text)) setMessage("")
-        
-        else setMessage("Invalide Email")
+        if (validator.isEmail(text)) {
+            setErr(false)
+    
+            setMessage("")
+            
+        }
+
+        else {
+            setErr(true)
+
+            setMessage("Invalide Email")
+        }
 
     }
 
@@ -88,7 +101,7 @@ const ResetPwd = ({navigation}) => {
             <View style={styles.main}>
                 {/*Message d'erreur*/}
                 {message != "" &&
-                    <View style={[styles.err, code != tempCode && { backgroundColor: "#dc3545" }]} >
+                    <View style={[styles.err, err && { backgroundColor: "#dc3545" }]} >
 
                         <Text style={styles.msg}>
                             {message}
@@ -117,7 +130,7 @@ const ResetPwd = ({navigation}) => {
 
                 {/*Button sign IN normal*/}
 
-                <Pressable style={styles.btnSignIn} onPress={Action}>
+                <Pressable style={styles.btnSignIn} onPress={Action} disabled={isLoaded}>
                     {!isLoaded ? <Text style={{ color: 'white' }}>{action}</Text>
                         : <Spinner color={"#ffffff"} />
                     }

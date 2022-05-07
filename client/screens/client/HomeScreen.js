@@ -7,7 +7,8 @@ import {
   View,
   StyleSheet,
   FlatList,
-  TouchableOpacity,
+  
+  
 } from 'react-native';
 
 const Data = [

@@ -10,7 +10,7 @@ import validator from 'validator';
 import axios from 'axios';
 
 
-const Login = ({navigation,route}) => {
+const Login = ({navigation,route},props) => {
     
     const [show, setShow] = useState(true);
 
@@ -46,6 +46,7 @@ const Login = ({navigation,route}) => {
                         .then(async res => {
                             setLoaded(false)
                             await AsyncStorage.setItem('idClient', res.data)
+                            await props.isLogged();
                             navigation.navigate("Client")
                         })
                         .catch(err => {
@@ -94,6 +95,14 @@ const Login = ({navigation,route}) => {
 
     }
 
+    const init=()=>{
+        setEmail("")
+        setLoaded(false)
+        setPwd("")
+        setMessage("")
+    }
+
+
     return (
         <View style={styles.container}>
 
@@ -102,7 +111,7 @@ const Login = ({navigation,route}) => {
                 <TouchableOpacity onPress={() => navigation.navigate("Main")}>
                     <Image style={styles.icon} source={require('../assets/backbold.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                <TouchableOpacity onPress={() => {init(); navigation.navigate("Register")}}>
                     <Text style={styles.reg}>Register</Text>
                 </TouchableOpacity>
             </View>

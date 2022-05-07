@@ -37,9 +37,8 @@ const NewPwd = ({ navigation, route }) => {
             }
             axios.post(ip+"/UpdatePwd",user)
             .then(res=>{
-                
                 setLoaded(false)
-                navigation.navigate("Login",{msgParam:res.data})
+                navigation.replace("Login",{msgParam:res.data})
             })
             .catch(err=>{
                 console.log(err.response)
@@ -114,7 +113,7 @@ const NewPwd = ({ navigation, route }) => {
 
                 {/*Button sign IN normal*/}
 
-                <Pressable style={styles.btnSignIn} onPress={UpdatePwd}>
+                <Pressable style={styles.btnSignIn} onPress={UpdatePwd} disabled={isLoaded}>
                     {!isLoaded ? <Text style={{ color: 'white' }}>Modifier</Text>
                         : <Spinner color={"#ffffff"} />
                     }
