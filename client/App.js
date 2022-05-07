@@ -9,6 +9,7 @@ import Register from './screens/Register';
 import Client from './screens/client/Client';
 import ResetPwd from './screens/ResetPwd'
 import NewPwd from './screens/NewPwd'
+import RestFood from './screens/client/RestFood';
 
 
 
@@ -51,9 +52,9 @@ const  App=()=> {
             <Stack.Screen name="NewPwd" component={NewPwd} />
           </>:
           <Stack.Screen name="Client" component={Client} />
-
+          
         }
-
+        <Stack.Screen name="RestFood" component={RestFood}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

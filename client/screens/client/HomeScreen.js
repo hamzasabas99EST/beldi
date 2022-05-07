@@ -7,38 +7,55 @@ import {
   View,
   StyleSheet,
   FlatList,
-  
+  TouchableOpacity
   
 } from 'react-native';
 
+console.disableYellowBox = true
 const Data = [
   {
     id: 1,
-    Key: 'Tacos De Lyon Gourmet1',
+    Key: 'Tacos De Lyon Gourmet',
     subtitle:'Tacos . Burger',
     note:4.1,
     image:require('../../assets/rest_1.png'),
+    commandeMin:39,
+    fraisLivraison:5,
+    minTime:35,
+    maxTime:45
   },
   {
     id: 2,
-    Key: 'Tacos De Lyon Gourmet2',
+    Key: 'Tacos De Lyon narcos',
     subtitle:'Tacos . Burger',
     note:4.1,
     image:require('../../assets/rest_2.png'),
+    commandeMin:40,
+    fraisLivraison:6,
+    minTime:32,
+    maxTime:44
   },
   {
     id: 3,
-    Key: 'Tacos De Lyon Gourmet3',
+    Key: 'Tacos De Lyon beldi',
     subtitle:'Tacos . Burger',
     note:4.1,
     image:require('../../assets/rest_3.png'),
+    commandeMin:72,
+    fraisLivraison:3,
+    minTime:25,
+    maxTime:40
   },
   {
     id: 4,
-    Key: 'Tacos De Lyon Gourmet4',
+    Key: 'Tacos De Lyon ensas',
     subtitle:'Tacos . Burger',
     note:4.1,
     image:require('../../assets/rest_4.png'),
+    commandeMin:25,
+    fraisLivraison:10,
+    minTime:36,
+    maxTime:48
   },
 ];
 
@@ -93,7 +110,9 @@ export default class FlatLists extends React.Component {
                 style={styles.restFlatList}
                 data={Data}
                 renderItem={({item}) => 
-                <View style={styles.card}>
+                <TouchableOpacity 
+                  onPress={()=>this.props.navigation.navigate('RestFood',item)}
+                  style={styles.card}>
                       <Image style={styles.imgRest} source={item.image}/>
                       <View style={styles.cardButtom}>
                           <Text style={styles.title}>{item.Key}</Text>
@@ -107,7 +126,7 @@ export default class FlatLists extends React.Component {
                             <Text style={styles.textnote}>{item.note} . $</Text>
                            </View>
                        </View>
-                </View>
+                </TouchableOpacity>
                 }
             />
         </View>
