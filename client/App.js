@@ -10,6 +10,8 @@ import Client from './screens/client/Client';
 import ResetPwd from './screens/ResetPwd'
 import NewPwd from './screens/NewPwd'
 import RestFood from './screens/client/RestFood';
+import OrderScreen from './screens/client/OrderScreen';
+import HomeScreen from './screens/client/HomeScreen';
 
 
 
@@ -55,6 +57,8 @@ const  App=()=> {
           
         }
         <Stack.Screen name="RestFood" component={RestFood}/>
+        <Stack.Screen name="OrderScreen" component={OrderScreen}/>
+        <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

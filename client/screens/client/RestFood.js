@@ -154,7 +154,12 @@ const RestFood=()=> {
                               <Text style={{fontWeight:'bold',alignSelf:'stretch'}}>SR {priceBasic}</Text>
                               <View style={styles.operation}>
                                 <Pressable disabled={disable} onPress={()=>{
-                                  compteur>1?setCompteur(compteur-1):setDisable(true)
+                                  if(compteur==2){
+                                    setDisable(true)
+                                    setCompteur(1)
+                                  }
+                                  else
+                                      setCompteur(compteur-1)
                                 }}>
                                     <Icon
                                       name='remove-outline'
