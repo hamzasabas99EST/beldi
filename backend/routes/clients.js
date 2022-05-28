@@ -3,6 +3,8 @@ const bcrypt=require("bcrypt");
 let Client=require('../models/client.model');
 //let emailConf=require("../helpers/EmailConfiguration")
 let nodemailer=require('nodemailer');
+let Restaurant = require('../models/restaurant.model')
+let Plat = require('../models/plat.model')
 
 
 
@@ -17,7 +19,7 @@ router.route('/add').post(async(req,res)=>{
            password
        });
        newClient.save()
-       .then(()=>res.json('Client added'))
+       .then(()=>res.json('Your account has been created successfully'))
        .catch(err=>res.status(400).json('Error'+err));
 })
 
@@ -34,10 +36,10 @@ router.route('/logEmailPwd').post(async(req,res)=>{
     
         if(check) res.json(client._id)
 
-        else res.status(404).send({message:"mot de passe incorrect "})
+        else res.status(404).send({message:"Incorrect  Password"})
 
     }else 
-        res.status(404).send({message:"invalide client "})
+        res.status(404).send({message:"Incorrect Username "})
   
 
 })
@@ -48,7 +50,7 @@ router.route('/logIn').post(async(req,res)=>{
     let client =await Client.findOne({"email":email})
     
     if(client) res.json(client)
-    else  res.status(404).send({message:"invalide client "})
+    else  res.status(404).send({message:"mot de passe "})
 })
 
 
@@ -83,14 +85,14 @@ router.route('/CodeConfirmation').post(async(req,res)=>{
       var mailOption=await {
         from:'beldi.ensas@gmail.com',
         to:client.email,
-        subject:'Code de confirmation',
-        html:'Merci pour Choisir notre application voici votre code du confirmation : <h1>'+code_activation+'</h1>'
+        subject:'Reset Account',
+        html:'Thank you for choosing us, here is your confirmation code <h1>'+code_activation+'</h1>'
         
       }
       transporter.sendMail(mailOption,function(error,info){
         if(error){
-          res.json("fin ghadi"+error)
-        }else res.json({code:code_activation,message:"Consulter votre email"})
+          res.json("Your Email doesn't exist")
+        }else res.json({code:code_activation,message:"Please check your email"})
       })
      
     }
@@ -104,8 +106,8 @@ router.route('/UpdatePwd').post(async(req,res)=>{
     let email=req.body.email
     let pass=await bcrypt.hash(req.body.pass,15);
     Client.findOneAndUpdate({'email':email},{'password':pass})
-    .then(()=>res.json("Mot de passe bien modifié"))
-    .catch(err=>res.json("Erreur dans l'operation "))
+    .then(()=>res.json("Your password has been updated successfully"))
+    .catch(err=>res.json("Something went wrong !!!"))
 
 
 })
@@ -114,7 +116,25 @@ router.route("/getClient/:id").get(async(req,res)=>{
   let id=req.params.id
   Client.findById(id)
   .then(client=>res.json(client))
-  .catch(err=>res.status(404).send({message:"Client introuvable"}))
+  .catch(err=>res.status(404).send({message:"Undefiend Username"}))
+})
+
+
+/** get Restaurants*/
+router.route("/restaurants").get(async (req, res) => {
+
+  Restaurant.find()
+  .then(restaurants=>res.json(restaurants))
+  .catch(()=>res.json("error during operation"))
+
+})
+
+router.route("/restaurants/:id").get(async (req, res) => {
+
+  Plat.find({"restaurant":req.params.id}).populate("restaurant")
+  .then(plats=>res.json(plats))
+  .catch(()=>res.json("error during operation"))
+
 })
 
 

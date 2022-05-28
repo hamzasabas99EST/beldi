@@ -1,119 +1,42 @@
-import React, { useState,useEffect} from 'react'
+import React, { useState} from 'react';
 import { StyleSheet, View, Image, Pressable, TextInput, TouchableOpacity, Text } from 'react-native';
-import ip from '../helpers/Ip';
 import { Spinner, Icon } from 'native-base'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Google from 'expo-google-app-auth'
-import google from '../helpers/google';
-import validator from 'validator';
-
 import axios from 'axios';
+import ip from '../helpers/ip';
 
 
-const Login = (props) => {
-    const {navigation,route,isLogged}=props
+const Login = props => {
+
     const [show, setShow] = useState(true);
 
-    const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [pwd, setPwd] = useState("")
     const [isLoaded, setLoaded] = useState(false)
     const [message, setMessage] = useState("")
-    const {msgParam}=route.params;
-    
-    useEffect(()=>{
-        if(msgParam) {
-           
-           setMessage(msgParam)
+
+    const signIn=()=>{
+
+        const livreur={
+            username:username,
+            password:pwd
         }
-       
-    },[])
-
-
-    //Cette fonction pour authentifier par email et mot  de passe
-    const SignIn = (e) => {
-
-        if (email == '' || pwd == '') setMessage("Email and password required")
-        else {
-            e.preventDefault();
-            setLoaded(true)
-
-            setTimeout(
-                () => {
-                    const user = {
-                        email: email,
-                        pass: pwd
-                    }
-                    axios.post(ip + "/logEmailPwd", user)
-                        .then(async res => {
-                            setLoaded(false)
-                            await AsyncStorage.setItem('idClient', res.data)
-                            await props.isLogged();
-                            navigation.navigate("Client")
-                        })
-                        .catch(err => {
-                            setLoaded(false)
-                            setMessage(err.response)
-                        })
-                }
-                , 2000)
-        }
-        /*
+        axios.post(ip+"/login",livreur)
+        .then(res=>alert(res))
+        .catch(err=>console.log(err))
+      
         
-       */
-
     }
-
-    //Cette fonction pour authentifier via google
-    const SignInWithGoogle = async () => {
-
-
-        Google.logInAsync(google)
-            .then(async res => {
-                console.log(res.user)
-                const user = {
-                    email: res.user.email
-                }
-                await axios.post(ip + "/logIn", user)
-                    .then(res => {
-                        navigation.navigate("Client")
-
-                    })
-                    .catch(err => {
-                        setLoaded(false)
-                        setMessage(err.response.data.message)
-                    })
-            })
-            .catch(err => console.log("error"))
-
-    }
-
-    //la verifiction syntaxe d'email
-    const checkEmail=(text)=>{
-        setEmail(text)
-        if(validator.isEmail(text)) setMessage("")
-        
-        else setMessage("Invalide Email")
-
-    }
-
-    const init=()=>{
-        setEmail("")
-        setLoaded(false)
-        setPwd("")
-        setMessage("")
-    }
-
 
     return (
         <View style={styles.container}>
 
             {/*head*/}
             <View style={styles.nav}>
-                <TouchableOpacity onPress={() => navigation.navigate("Main")}>
+                <TouchableOpacity >
                     <Image style={styles.icon} source={require('../assets/backbold.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {init(); navigation.navigate("Register")}}>
-                    <Text style={styles.reg}>Register</Text>
+                <TouchableOpacity >
+                    <Text style={styles.reg}>the delivery man</Text>
                 </TouchableOpacity>
             </View>
             {/*Title*/}
@@ -124,17 +47,17 @@ const Login = (props) => {
             <View style={styles.main}>
                 {/*Message d'erreur*/}
                 {!message == "" &&
-                    <View style={[styles.err, (msgParam && message==msgParam) && {backgroundColor:"#1cc88a" }]} >
+                    <View style={styles.err} >
                         <Text style={styles.msg}>
                             {message}
                         </Text>
                     </View>
                 }
 
-                {/*Input email*/}
+                {/*Input username*/}
                 <TextInput style={styles.input}
-                    placeholder="Email" value={email}
-                    onChangeText={(text) => checkEmail(text)}
+                    placeholder="Username" value={username}
+                    onChangeText={text=>setUsername(text)}
                     autoCapitalize='none'
                 />
 
@@ -143,7 +66,8 @@ const Login = (props) => {
                     <TextInput
                         secureTextEntry={show}
                         value={pwd}
-                        onChangeText={(text) => setPwd(text)} placeholder="Password" />
+                        onChangeText={(text) => setPwd(text)}
+                        placeholder="Password" />
                     <Icon
                         name={show ? "eye" : "eye-off"}
                         style={{ color: '#a9a9a9', position: 'absolute', left: '95%', fontSize: 20 }}
@@ -153,30 +77,24 @@ const Login = (props) => {
                 </View>
 
                 {/*Mot de passse oublié*/}
-                <Text style={styles.forgot} onPress={() => navigation.navigate("Reset")}>Forgot Password?</Text>
+                <Text style={styles.forgot} >Forgot Password?</Text>
 
                 {/*Button sign IN normal*/}
 
-                <Pressable style={styles.btnSignIn} onPress={SignIn} disabled={isLoaded}>
+                <Pressable style={styles.btnSignIn}  onPress={signIn} disabled={isLoaded}>
                     {!isLoaded ? <Text style={{ color: 'white' }}>Sign In</Text>
                         : <Spinner color={"#ffffff"} />
                     }
 
                 </Pressable>
 
-                {/*Button sign IN with google*/}
-                <Pressable style={[styles.button, { marginTop: 50 }]} onPress={SignInWithGoogle}>
-                    <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/google.png')} />
-                    <Text style={styles.txtbutton}>Continue with Google</Text>
-                    <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/flech.png')} />
-                </Pressable>
 
-               
             </View>
 
         </View>
-    )
-}
+    );
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -255,13 +173,14 @@ const styles = StyleSheet.create({
         marginLeft: 25,
         marginRight: 25
     },
+
     passwd: {
         flexDirection: 'row',
         alignContent: 'center',
         alignItems: 'center'
     },
     err: {
-        backgroundColor:"#dc3545",
+        backgroundColor: "#dc3545",
         width: '80%',
         borderRadius: 40,
         height: '4%',
@@ -275,4 +194,5 @@ const styles = StyleSheet.create({
         color: "#fff"
     }
 });
+
 export default Login;

@@ -2,7 +2,7 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 
-const AdminShema=Schema({
+const AdminSchema=Schema({
    name:{type:String,required:true},
    username:{type:String,required:true},
    password:{type:String,required:true},
@@ -10,5 +10,5 @@ const AdminShema=Schema({
    
 });
 
-const Admin=mongoose.model('Admin',AdminShema);
+const Admin=mongoose.model('Admin',AdminSchema);
 module.exports=Admin;

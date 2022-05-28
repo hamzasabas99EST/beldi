@@ -20,20 +20,10 @@ connection.once('open',()=>{
   console.log("Mongo db is seccessfully");
 })
 
-/*app.post('/add',async(req,res)=>{
-    let name=req.body.name
-    const newClient=new Client({
-        name
-    });
-    newClient.save()
-    .then(()=>res.json('Client addd'))
-    .catch(err=>res.status(400).json('Error'+err));
-});
 
-app.get('/',async(req,res)=>{
-    Client.find()
-    .then(clients=>res.json(clients))
-})*/
+const AdminRouter=require('./routes/admins');
+app.use('/admins',AdminRouter);
+
 
 const ClientRouter=require('./routes/clients');
 app.use('/clients',ClientRouter);

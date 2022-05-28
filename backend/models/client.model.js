@@ -2,7 +2,7 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 
-const ClientShema=Schema({
+const ClientSchema=Schema({
    name:{type:String,required:true},
    email:{type:String,required:true},
    password:{type:String,required:true},
@@ -10,5 +10,5 @@ const ClientShema=Schema({
    
 });
 
-const Client=mongoose.model('Client',ClientShema);
+const Client=mongoose.model('Client',ClientSchema);
 module.exports=Client;

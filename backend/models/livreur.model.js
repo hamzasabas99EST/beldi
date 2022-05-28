@@ -2,13 +2,13 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 
-const LivreurShema=Schema({
+const LivreurSchema=Schema({
    name:{type:String,required:true},
    username:{type:String,required:true},
    password:{type:String,required:true},
-   restaurant:{type: Schema.ObjectId,ref:'Restauraunt'},
+ //  restaurant:{type: Schema.ObjectId,ref:'Restauraunt'},
  
 });
 
-const Livreur=mongoose.model('Livreur',LivreurShema);
+const Livreur=mongoose.model('Livreur',LivreurSchema);
 module.exports=Livreur;

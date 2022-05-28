@@ -44,7 +44,7 @@ const Register = ({navigation}) => {
                         axios.post(ip + "/add", client)
                             .then(res => {
                                 init()
-                                navigation.push("Login", { msgParam: "Votre compte a été bien créer" })
+                                navigation.push("Login", { msgParam: res.data })
                             })
                             .catch(err => console.log(err))
                     }
@@ -173,11 +173,7 @@ const Register = ({navigation}) => {
                     <Text style={styles.txtbutton}>Continue with Google</Text>
                     <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/flech.png')} />
                 </Pressable>
-                <Pressable style={styles.button} onPress={() => null}>
-                    <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/fb.png')} />
-                    <Text style={styles.txtbutton}>Continue with Facebook</Text>
-                    <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/flech.png')} />
-                </Pressable>
+                
             </View>
         </View>
     )
