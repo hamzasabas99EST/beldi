@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { StyleSheet, ScrollView, View, Text, SafeAreaView, Pressable, Modal, FlatList, Image, Dimensions } from 'react-native';
-import { Icon } from 'native-base'
+import { Spinner, Icon } from 'native-base'
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+
 
 
 const CustomModal = (props) => {
 
-    const {plat}=props
 
+
+    const { plat } = props
+
+    const navigation = useNavigation()
 
     //Compteur des plats
     const [compteur, setCompteur] = useState(1)
@@ -17,9 +23,10 @@ const CustomModal = (props) => {
 
     const [disable, setDisable] = useState(false)
 
+    const [isloaded, setLoaded] = useState(false)
 
     const remove = () => {
-        
+
         if (compteur == 1) {
             setDisable(true)
         } else {
@@ -31,11 +38,42 @@ const CustomModal = (props) => {
     const add = () => {
 
         setCompteur(compteur + 1); setDisable(false);
-        
+
     }
 
-    const close=()=>{
+    const close = () => {
         props.isclose()
+    }
+
+    const add_to_basket = async () => {
+
+        setLoaded(true)
+
+        let panier = JSON.parse(await AsyncStorage.getItem("panier")) || []
+        let checkProduit = false
+        let ligne_commande={"id":plat._id,"name":plat.name,"quantite":compteur,"restau":plat.restaurant.name,"price":plat.price,"image":plat.photo}
+
+        setTimeout(async () => {
+            if (panier.length === 0)
+                panier.push(ligne_commande)
+            else {
+               checkProduit= panier.find(item => {
+                    if (item.id === ligne_commande.id) {
+                        item.quantite += ligne_commande.quantite
+                        return true;
+                    }
+                    
+                })
+                if(!checkProduit) panier.push(ligne_commande)
+            }
+
+            await AsyncStorage.setItem('panier', JSON.stringify(panier))
+                .then(() => setLoaded(false))
+        }, 1000)
+        
+       
+
+
     }
 
     return (
@@ -78,14 +116,20 @@ const CustomModal = (props) => {
                         </View>
 
                     </View>
-                    
+
                     <View style={styles.buttModal}>
                         <Text>Add your order to benefit from a delicious food!</Text>
                         <Pressable style={styles.button}
-                            onPress={() => alert("added")}
+                            onPress={add_to_basket}
                         >
-                            <Text style={styles.whtext}>Add to basket</Text>
-                            <Text style={styles.whtext}>{Math.ceil(plat.price*compteur)} Dhs </Text>
+                            {!isloaded ?
+                                <>
+                                    <Text style={styles.whtext}>Add to basket</Text>
+                                    <Text style={styles.whtext}>{Math.ceil(plat.price * compteur)} Dhs </Text>
+                                </> :
+                                <Spinner style={{ alignItems: "center" }} color={"#00000"} />
+                            }
+
                         </Pressable>
                     </View>
                 </View>

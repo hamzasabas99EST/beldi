@@ -91,6 +91,7 @@ const RestFood = () => {
   }
 
   const [plats, setPlats] = useState([])
+  const [platModal, setplatModal] = useState([])
   const [restaurant, setRestaurant] = useState()
  
 
@@ -103,7 +104,8 @@ const RestFood = () => {
       setModal(false)
   }
 
-  const openModal=()=>{
+  const openModal=(item)=>{
+    setplatModal(item)
     setModal(true)
   }
   
@@ -154,9 +156,9 @@ const RestFood = () => {
           keyExtractor={item => item._id.toString()}
           renderItem={({ item }) =>
             <View>
-              {modal && <CustomModal isopen={modal}  plat={item} isclose={closeModal}/>}
+              <CustomModal isopen={modal}  plat={platModal} isclose={closeModal}/>
               <Pressable
-                onPress={openModal}
+                onPress={()=>{setModal(true); setplatModal(item)}}
                 style={styles.allCard}>
                 <Image style={styles.allImg} source={{uri:item?.photo}} />
                 <View style={styles.desc}>

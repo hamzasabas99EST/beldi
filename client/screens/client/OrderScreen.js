@@ -1,78 +1,89 @@
-import React, { useState,useEffect } from 'react';
-import { StyleSheet, View, Text, Image, FlatList, Pressable, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Image, FlatList, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base'
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-const Data = [
-    {
-        id: 1,
-        Key: 'Twister Box',
-        subtitle: 'Pizza,frites, boisson 1',
-        price: 42,
-        quantite: 2,
-        image: require('../../assets/all1.png'),
-    },
-    {
-        id: 2,
-        Key: 'Flag Box',
-        subtitle: 'Pizza,frites, boisson 2',
-        price: 46,
-        quantite: 3,
-        image: require('../../assets/all2.png'),
-    },
-    {
-        id: 3,
-        Key: 'Red Hight',
-        subtitle: 'Pizza,frites, boisson 3',
-        price: 25,
-        quantite: 1,
-        image: require('../../assets/all3.png'),
-    },
-    {
-        id: 4,
-        Key: 'Bland green',
-        subtitle: 'Pizza,frites, boisson 4',
-        price: 41,
-        quantite: 2,
-        image: require('../../assets/all4.png'),
-    },
-    {
-        id: 5,
-        Key: 'Atlantic Tacos',
-        subtitle: 'Pizza,frites, boisson 5',
-        price: 31,
-        quantite: 2,
-        image: require('../../assets/all5.png'),
-    },
-    {
-        id: 6,
-        Key: 'Bland green',
-        subtitle: 'Pizza,frites, boisson 4',
-        price: 41,
-        quantite: 4,
-        image: require('../../assets/all4.png'),
-    },
-    {
-        id: 7,
-        Key: 'Atlantic Tacos',
-        subtitle: 'Pizza,frites, boisson 5',
-        price: 31,
-        quantite: 2,
-        image: require('../../assets/all5.png'),
-    },
-];
+
 const OrderScreen = () => {
 
-    useEffect(()=>{
-        setData(Data)
-    },[])
 
-    const [data,setData]=useState();
+    const isFocused = useIsFocused()
+
+
+    useEffect(() => {
+        setData([])
+        checkStorage();
+
+    }, [isFocused]);
+
+    const checkStorage = async () => {
+        try {
+            let val = JSON.parse(await AsyncStorage.getItem("panier"))
+            setData(val)
+            if (val != null) {
+                let somme = 0;
+                val.forEach(item => {
+                    somme += item.price * item.quantite
+                    setSubTotal(somme)
+                })
+
+            }
+        } catch (e) {
+            alert('Failed to save the data to the storage')
+        }
+
+    }
+
+
+    const [data, setData] = useState([]);
     const [compteur, setCompteur] = useState(1)
     const [disable, setDisable] = useState(false)
     const navigate = useNavigation();
+    const frais = 10;
+    const [subtotal, setSubTotal] = useState()
+
+    const deleteItem = async (id) => {
+        let newData = data.filter(item => {
+            if (item.id === id) {
+                setSubTotal(subtotal-(item.quantite*item.price))
+                return
+            }
+
+        })
+
+        await AsyncStorage.setItem('panier', JSON.stringify(newData))
+            .then(() => setData(newData))
+
+    }
+
+    const ItemRender = ({ ligne }) => {
+        return (
+            <View style={styles.card}>
+                <View style={styles.desc}>
+                    <Text style={styles.smtitle}>{ligne.name}</Text>
+                    <Text style={{ color: 'grey' }}>{ligne.restau}</Text>
+                    <View style={styles.flexOperation}>
+                        <Text style={styles.price}>{ligne.price} DHS</Text>
+                        <View style={styles.operation}>
+
+                            <Text>{ligne.quantite}</Text>
+                        </View>
+
+                    </View>
+                </View>
+
+                <Image style={styles.Img} source={{ uri: ligne.image }} />
+
+                <TouchableOpacity onPress={() => deleteItem(ligne.id)} key={`${ligne.id}`}>
+                    <Icon name='close' />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
 
     return (
         <View style={styles.container}>
@@ -82,59 +93,28 @@ const OrderScreen = () => {
                     nestedScrollEnabled
                     style={styles.flatList}
                     data={data}
+                    keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) =>
-                        <View style={styles.card}>
-                            <View style={styles.desc}>
-                                <Text style={styles.smtitle}>{item.Key}</Text>
-                                <Text style={{ color: 'grey' }}>{item.subtitle}</Text>
-                                <View style={styles.flexOperation}>
-                                    <Text style={styles.price}>{item.price} DHS</Text>
-                                    <View style={styles.operation}>
-                                        <Pressable disabled={disable} onPress={() => {
-                                            if (compteur == 2) {
-                                                setDisable(true)
-                                                setCompteur(1)
-                                            }
-                                            else
-                                                setCompteur(compteur - 1)
-                                        }}>
-                                            <Icon
-                                                name='remove-outline'
-                                                style={{ color: disable ? "#a9a9a9" : "#f9ba07" }}
-                                            />
-                                        </Pressable>
-                                        <Text>{compteur}</Text>
-                                        <Pressable onPress={() => { setCompteur(compteur + 1); setDisable(false); }}>
-                                            <Icon
-                                                name='add-outline'
-                                                style={{ color: '#f9ba07' }}
-                                            />
-                                        </Pressable>
-                                    </View>
-
-                                </View>
-                            </View>
-                            <Image style={styles.Img} source={item.image} />
-                        </View>
+                        <ItemRender ligne={item} />
                     }
                 />
-                <View style={styles.payment}>
-                    <Text style={styles.paymentSummary}>Payment summary</Text>
-                    <View style={styles.arange}>
-                        <View style={styles.start}>
-                            <Text style={styles.txt}>Subtotal</Text>
-                            <Text style={styles.txt}>Delivery fee</Text>
-                            <Text style={[styles.txt, { color: 'black' }]}>Total amount</Text>
-                        </View>
-                        <View style={styles.end}>
-                            <Text style={styles.txt}>SR 351.00</Text>
-                            <Text style={styles.txt}>SR 15.00</Text>
-                            <Text style={[styles.txt, { color: 'black' }]}>SR 366.00</Text>
-                        </View>
+
+            </ScrollView>
+            <View style={styles.payment}>
+                <Text style={styles.paymentSummary}>Payment summary</Text>
+                <View style={styles.arange}>
+                    <View style={styles.start}>
+                        <Text style={styles.txt}>Subtotal</Text>
+                        <Text style={styles.txt}>Delivery fee</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>Total amount</Text>
+                    </View>
+                    <View style={styles.end}>
+                        <Text style={styles.txt}>DHs {subtotal}</Text>
+                        <Text style={styles.txt}>DHs {frais}</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>DHs {subtotal + frais}</Text>
                     </View>
                 </View>
-            </ScrollView>
-
+            </View>
             <View style={styles.buttons}>
                 <Pressable style={styles.buttonAddItem}
                     onPress={() => navigate.navigate('HomeScreen')}
@@ -142,11 +122,12 @@ const OrderScreen = () => {
                     <Text style={styles.textAddItem}>Add items</Text>
                 </Pressable>
                 <Pressable style={styles.buttonCheckout}
-                    onPress={() => alert("checkout")}
+                    onPress={async () => await AsyncStorage.removeItem("panier")}
                 >
                     <Text style={styles.textCheckout}>Checkout</Text>
                 </Pressable>
             </View>
+
         </View>
     );
 }
@@ -179,6 +160,9 @@ const styles = StyleSheet.create({
         height: 100,
         alignItems: 'center',
     },
+    desc: {
+        marginStart: 20
+      },
     label: {
         textAlign: 'center',
         marginTop: 40,
@@ -186,20 +170,21 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     Img: {
+        width: 80,
+        height: 50,
         borderRadius: 10,
         marginStart: 130
     },
     operation: {
-        flexDirection: 'row',
         alignItems: 'center',
         borderColor: '#e6dcdc',
         borderWidth: 1,
         borderRadius: 20,
         width: 80,
-        justifyContent: 'space-between',
-        paddingStart: 4,
+        paddingStart: 5,
         paddingEnd: 4,
-        marginStart: 220
+        marginStart: 220,
+        fontSize: 25
     },
     flexOperation: {
         flexDirection: 'row',
