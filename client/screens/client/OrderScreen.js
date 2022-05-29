@@ -24,11 +24,8 @@ const OrderScreen = () => {
             let val = JSON.parse(await AsyncStorage.getItem("panier"))
             setData(val)
             if (val != null) {
-                let somme = 0;
-                val.forEach(item => {
-                    somme += item.price * item.quantite
-                    setSubTotal(somme)
-                })
+                
+                updateSubtotal(val)
 
             }
         } catch (e) {
@@ -43,20 +40,25 @@ const OrderScreen = () => {
     const [disable, setDisable] = useState(false)
     const navigate = useNavigation();
     const frais = 10;
-    const [subtotal, setSubTotal] = useState()
+    const [subtotal, setSubTotal] = useState(0)
 
     const deleteItem = async (id) => {
         let newData = data.filter(item => {
-            if (item.id === id) {
-                setSubTotal(subtotal-(item.quantite*item.price))
-                return
-            }
-
+                return item.id !== id 
         })
 
+        updateSubtotal(newData)
         await AsyncStorage.setItem('panier', JSON.stringify(newData))
             .then(() => setData(newData))
 
+    }
+
+    const updateSubtotal=(arr)=>{
+        let somme = 0;
+        arr.forEach(item => {
+            somme += item.price * item.quantite
+            setSubTotal(somme)
+        })
     }
 
     const ItemRender = ({ ligne }) => {
@@ -87,19 +89,19 @@ const OrderScreen = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
-                <Text style={styles.label}>My order</Text>
-                <FlatList
-                    nestedScrollEnabled
-                    style={styles.flatList}
-                    data={data}
-                    keyExtractor={item => item.id.toString()}
-                    renderItem={({ item }) =>
-                        <ItemRender ligne={item} />
-                    }
-                />
 
-            </ScrollView>
+            <Text style={styles.label}>My order</Text>
+            <FlatList
+                nestedScrollEnabled
+                style={styles.flatList}
+                data={data}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) =>
+                    <ItemRender ligne={item} />
+                }
+            />
+
+
             <View style={styles.payment}>
                 <Text style={styles.paymentSummary}>Payment summary</Text>
                 <View style={styles.arange}>
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     },
     desc: {
         marginStart: 20
-      },
+    },
     label: {
         textAlign: 'center',
         marginTop: 40,
