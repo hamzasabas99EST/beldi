@@ -178,11 +178,12 @@ const styles = StyleSheet.create({
         borderColor: '#e6dcdc',
         borderWidth: 1,
         borderRadius: 20,
-        width: 80,
+        width: 40,
         paddingStart: 5,
         paddingEnd: 4,
         marginStart: 120,
-        fontSize: 25
+        fontSize: 25,
+        marginTop:10,
     },
     flexOperation: {
         flexDirection: 'row',
