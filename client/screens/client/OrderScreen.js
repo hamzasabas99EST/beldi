@@ -68,15 +68,11 @@ const OrderScreen = () => {
                     <View style={styles.flexOperation}>
                         <Text style={styles.price}>{ligne.price} DHS</Text>
                         <View style={styles.operation}>
-
                             <Text>{ligne.quantite}</Text>
                         </View>
-
                     </View>
                 </View>
-
                 <Image style={styles.Img} source={{ uri: ligne.image }} />
-
                 <TouchableOpacity onPress={() => deleteItem(ligne.id)} key={`${ligne.id}`}>
                     <Icon name='close' />
                 </TouchableOpacity>
@@ -173,7 +169,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 50,
         borderRadius: 10,
-        marginStart: 130
+        marginStart: 100
     },
     operation: {
         alignItems: 'center',
@@ -183,7 +179,7 @@ const styles = StyleSheet.create({
         width: 80,
         paddingStart: 5,
         paddingEnd: 4,
-        marginStart: 220,
+        marginStart: 120,
         fontSize: 25
     },
     flexOperation: {

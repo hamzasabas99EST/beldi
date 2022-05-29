@@ -258,11 +258,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     alignItems:"center" 
   },
-  cardButtom: {
-    width: Dimensions.get('window').width
-    ,
-    paddingStart: 10
-  },
   smsub: {
     color: 'gray'
   },

@@ -98,19 +98,19 @@ const CustomModal = (props) => {
                         </Pressable>
                         <Text style={[styles.title, { fontWeight: 'bold', alignSelf: 'stretch', marginStart: 0 }]}>{plat.name}</Text>
                         <Text style={{ alignSelf: 'stretch', marginTop: 8, marginBottom: 8 }}>{plat.extra}</Text>
-                        <Text style={{ fontWeight: 'bold', alignSelf: 'stretch' }}>Dhs {plat.price}</Text>
+                        <Text style={{ fontWeight: 'bold', alignSelf: 'stretch' }}>{plat.price} Dhs</Text>
                         <View style={styles.operation}>
                             <Pressable disabled={disable} onPress={remove}>
                                 <Icon
                                     name='remove-outline'
-                                    style={{ color: compteur == 1 ? "#a9a9a9" : "#ff5a00" }}
+                                    style={{ color: compteur == 1 ? "#a9a9a9" : "#f9ba07" }}
                                 />
                             </Pressable>
                             <Text>{compteur}</Text>
                             <Pressable onPress={add}>
                                 <Icon
                                     name='add-outline'
-                                    style={{ color: '#ff5a00' }}
+                                    style={{ color: '#f9ba07' }}
                                 />
                             </Pressable>
                         </View>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     button: {
-        backgroundColor: '#ff5a00',
+        backgroundColor: '#f9ba07',
         width: '54%',
         height: 38,
         marginTop: 20,
