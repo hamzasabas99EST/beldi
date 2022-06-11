@@ -1,4 +1,5 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, View, Image, Pressable, TextInput, TouchableOpacity, Text } from 'react-native';
 import { Spinner, Icon } from 'native-base'
 import axios from 'axios';
@@ -14,17 +15,28 @@ const Login = props => {
     const [isLoaded, setLoaded] = useState(false)
     const [message, setMessage] = useState("")
 
-    const signIn=()=>{
+    const signIn = () => {
+        setLoaded(true)
+        setTimeout(() => {
+            const livreur = {
+                username: username,
+                pass: pwd
+            }
+            axios.post(ip + "/login", livreur)
+                .then(async res => {
+                    if (res.status == 200) {
 
-        const livreur={
-            username:username,
-            password:pwd
-        }
-        axios.post(ip+"/login",livreur)
-        .then(res=>alert(res))
-        .catch(err=>console.log(err))
-      
-        
+                        setLoaded(false)
+                        await AsyncStorage.setItem('idLivreur', res.data)
+                        await props.isLogged();
+                        navigation.navigate("Livreur")
+                    }
+
+
+                })
+                .catch(err => {setLoaded(false); console.log(err)})
+        }, 2000)
+
     }
 
     return (
@@ -32,11 +44,9 @@ const Login = props => {
 
             {/*head*/}
             <View style={styles.nav}>
+               
                 <TouchableOpacity >
-                    <Image style={styles.icon} source={require('../assets/backbold.png')} />
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <Text style={styles.reg}>the delivery man</Text>
+                    <Text style={styles.reg}>BELDI</Text>
                 </TouchableOpacity>
             </View>
             {/*Title*/}
@@ -57,7 +67,7 @@ const Login = props => {
                 {/*Input username*/}
                 <TextInput style={styles.input}
                     placeholder="Username" value={username}
-                    onChangeText={text=>setUsername(text)}
+                    onChangeText={text => setUsername(text)}
                     autoCapitalize='none'
                 />
 
@@ -81,7 +91,7 @@ const Login = props => {
 
                 {/*Button sign IN normal*/}
 
-                <Pressable style={styles.btnSignIn}  onPress={signIn} disabled={isLoaded}>
+                <Pressable style={styles.btnSignIn} onPress={signIn} disabled={isLoaded}>
                     {!isLoaded ? <Text style={{ color: 'white' }}>Sign In</Text>
                         : <Spinner color={"#ffffff"} />
                     }
