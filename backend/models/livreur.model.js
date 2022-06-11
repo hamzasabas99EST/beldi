@@ -6,7 +6,10 @@ const LivreurSchema=Schema({
    name:{type:String,required:true},
    username:{type:String,required:true},
    password:{type:String,required:true},
- //  restaurant:{type: Schema.ObjectId,ref:'Restauraunt'},
+   etat:{type: String,default:'free'},
+   latitudeL:{type:Number,required:false},
+   longitudeL:{type:Number,required:false},
+   city:{type:String}
  
 });
 

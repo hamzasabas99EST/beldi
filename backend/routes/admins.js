@@ -36,7 +36,7 @@ router.route("/addLivreur").post(async (req, res) => {
 
     newLivreur.save()
         .then(() => res.json("Livreur bien ajouté"))
-        .cath(err => res.status(404).json("ERROR " + err))
+        .catch(err => res.status(404).json("ERROR " + err))
 
 })
 

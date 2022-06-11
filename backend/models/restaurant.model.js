@@ -6,7 +6,9 @@ const RestaurantSchema=Schema({
    name:{type:String,required:true},
    adresse:{type:String,required:true},
    tele:{type:String,required:true},
-   photo:{type:String,required:true}
+   photo:{type:String,required:true},
+   city:{type:String,required:true}
+
  
 });
 

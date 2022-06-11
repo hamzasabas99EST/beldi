@@ -3,12 +3,13 @@ const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 
 const Ligne_CommandeSchema=Schema({
-   date_Ligne_Commande:{type:Date,required:true},
-   username:{type:String,required:true},
-   password:{type:String,required:true},
-   restaurant:{type: Schema.ObjectId,ref:'Restauraunt'},
-   client:{type: Schema.ObjectId,ref:'Client'},
-   livreur:{type: Schema.ObjectId,ref:'Client'},
+   restaurant:{type: Schema.ObjectId,ref:'Restaurant'},
+   plat:{type: Schema.ObjectId,ref:'Plat'},
+   commande:{type:Schema.ObjectId,ref:"Commande"},
+   subTotal:{type:Number,required:true},
+   quantite:{type:Number,required:true},
+   isReady:{type:Boolean,default:false}   
+   
  
 });
 
