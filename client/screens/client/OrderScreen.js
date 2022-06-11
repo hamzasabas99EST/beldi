@@ -3,13 +3,9 @@ import { StyleSheet, View, Text, Image, FlatList, Pressable, ScrollView, Touchab
 import { Icon } from 'native-base'
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-
+import Swipeout from 'react-native-swipeout';
 
 const OrderScreen = () => {
-
-
     const isFocused = useIsFocused()
 
 
@@ -62,23 +58,45 @@ const OrderScreen = () => {
     }
 
     const ItemRender = ({ ligne }) => {
+        var swipeoutBtns = [
+            {
+              component: (
+                <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    }}
+                >
+                  <Icon
+                    name='trash-outline'
+                    style={{color:"white"}}
+                    />
+                </View>
+              ),
+              backgroundColor: '#ec4242',
+              onPress: () => {
+                deleteItem(ligne.id); 
+              },
+            },
+          ]
         return (
-            <View style={styles.card}>
-                <View style={styles.desc}>
-                    <Text style={styles.smtitle}>{ligne.name}</Text>
-                    <Text style={{ color: 'grey' }}>{ligne.restau}</Text>
-                    <View style={styles.flexOperation}>
-                        <Text style={styles.price}>{ligne.price} DHS</Text>
-                        <View style={styles.operation}>
-                            <Text>{ligne.quantite}</Text>
+            <Swipeout right={swipeoutBtns}>  
+                <View style={styles.card}>
+                    <View style={styles.desc}>
+                        <Text style={styles.smtitle}>{ligne.name}</Text>
+                        <Text style={{ color: 'grey' }}>{ligne.restau}</Text>
+                        <View style={styles.flexOperation}>
+                            <Text style={styles.price}>{ligne.price} DHS</Text>
+                            <View style={styles.operation}>
+                                <Text>{ligne.quantite}</Text>
+                            </View>
                         </View>
                     </View>
+                    <Image style={styles.Img} source={{ uri: ligne.image }} />
                 </View>
-                <Image style={styles.Img} source={{ uri: ligne.image }} />
-                <TouchableOpacity onPress={() => deleteItem(ligne.id)} key={`${ligne.id}`}>
-                    <Icon name='close' />
-                </TouchableOpacity>
-            </View>
+            </Swipeout>
         )
     }
 
