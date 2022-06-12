@@ -71,7 +71,7 @@ export default class FlatLists extends React.Component {
   }
 
   componentDidMount(){
-    axios.get(ip+"/restaurants")
+    axios.get(ip+"/restaurants/Safi")
     .then(res=>this.setState({renderData:res.data}))
     .catch(err=>console.log(err))
   }

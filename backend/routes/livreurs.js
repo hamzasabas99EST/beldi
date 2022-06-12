@@ -3,7 +3,7 @@ let Commande = require("../models/commande.model")
 let Livreur = require("../models/livreur.model")
 let Lignescommande = require("../models/ligne_commande.model")
 const bcrypt = require("bcrypt");
-
+const Restaurant = require('../models/restaurant.model');
 
 router.route("/updateCoords/:id").post(async (req, res) => {
 
@@ -92,7 +92,14 @@ router.route("/livred/:id").post(async (req, res) => {
    
 })
 
+/**  Restaurants plats et categories*/
+router.route("/restaurants/:city").get(async (req, res) => {
 
+    Restaurant.find({ city: req.params.city })
+      .then(restaurants => res.json(restaurants))
+      .catch(() => res.json("error during operation"))
+  
+  })
 
 
 module.exports = router
