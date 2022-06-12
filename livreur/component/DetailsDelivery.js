@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable,Dimensions } from 'react-native';
 import { CheckBox } from 'react-native-elements'
 
 import axios from 'axios';
@@ -81,9 +81,27 @@ const DetailsDileveryScreen = ({ route }) => {
                 renderItem={({ item }) =>
                     <Item ligne={item} />
                 }
-            >
-
-            </FlatList>
+            />
+            <View style={styles.payment}>
+                <Text style={styles.paymentSummary}>Payment summary</Text>
+                <View style={styles.arange}>
+                    <View style={styles.start}>
+                        <Text style={styles.txt}>Subtotal</Text>
+                        <Text style={styles.txt}>Delivery fee</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>Total amount</Text>
+                    </View>
+                    <View style={styles.end}>
+                        <Text style={styles.txt}>15 DHs</Text>
+                        <Text style={styles.txt}>10 DHs</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>55 DHs</Text>
+                    </View>
+                </View>
+                <Pressable style={styles.buttonVelid}
+                    onPress={() => alert("salamoAlaikom")}
+                >
+                    <Text style={styles.textValid}>Payed</Text>
+                </Pressable>
+            </View>
         </View>
     );
 }
@@ -120,11 +138,49 @@ const styles = StyleSheet.create({
         marginRight: 15,
         alignItems: "center",
         padding: 2
-
     },
-
-
-
+    paymentSummary: {
+        fontSize: 18,
+    },
+    arange: {
+        flexDirection: 'row',
+        justifyContent:'space-between'
+    },
+    txt: {
+        color: 'gray',
+        fontSize: 14,
+        marginBottom: 6,
+        marginTop: 6
+    },
+    payment:{
+        padding:15,
+        width:Dimensions.get('window').width-20,
+        alignSelf:'center',
+        marginBottom:20,
+        marginTop:50,
+        backgroundColor:'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.37,
+        shadowRadius: 7.49,
+        elevation: 12,
+    },
+    buttonVelid:{
+        backgroundColor:'#f9ba07',
+        alignItems:'center',
+        width:140,
+        paddingTop:8,
+        paddingBottom:8,
+        marginTop:4,
+        borderRadius:20,
+        alignSelf:'flex-end'
+    },
+    textValid:{
+        color:'white'
+    },
 
 })
 

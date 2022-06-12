@@ -5,11 +5,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // Screens
 import HomeScreen from '../screens/livreur/HomeScreen';
 import DeliveryScreen from '../screens/livreur/DeliveryScreen';
+import ProfilScreen from '../screens/livreur/ProfilScreen';
 
 //Screen names
 const homeName = "Home";
 const delveries = "Delivery";
-const orderName = "Order";
 const profileName = "Profil";
 
 const Tab = createBottomTabNavigator();
@@ -27,12 +27,12 @@ function ButtomNavBar() {
               iconName = focused ? 'home' : 'home-outline';
 
             } else if (rn === delveries) {
-              iconName = focused ? 'analytics' : 'analytics-outline';
+              iconName = focused ? 'trending-up' : 'trending-up-outline';
 
-            }/* else if (rn === orderName) {
-              iconName = focused ? 'add-circle' : 'add-circle-outline';
+            } else if (rn === profileName) {
+              iconName = focused ? 'person' : 'person-outline';
             }
-            else if (rn === profileName) {
+            /*else if (rn === profileName) {
               iconName = focused ? 'person' : 'person-outline';
             }*/
 
@@ -56,6 +56,8 @@ function ButtomNavBar() {
 
       <Tab.Screen name={homeName} component={HomeScreen} />
       <Tab.Screen name={delveries} component={DeliveryScreen} />
+      <Tab.Screen name={profileName} component={ProfilScreen} />
+
       {/*<Tab.Screen name={orderName} component={OrderScreen} />
       <Tab.Screen name={profileName} component={ProfileScreen} />*/}
 
