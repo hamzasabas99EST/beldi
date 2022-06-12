@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, FlatList, Pressable, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, FlatList, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base'
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Swipeout from 'react-native-swipeout';
+import axios from 'axios';
+import ip from '../../helpers/Ip';
+import { FancyAlert } from 'react-native-expo-fancy-alerts';
+
+
+
+
 
 const OrderScreen = () => {
+
+
     const isFocused = useIsFocused()
+    const [data, setData] = useState([]);
+    const frais = 10;
+    const [subtotal, setSubTotal] = useState(0)
+    const [isloaded, setLoaded] = useState(false)
+    const [visible, setVisible] = useState(false)
 
 
     useEffect(() => {
@@ -20,7 +33,7 @@ const OrderScreen = () => {
             let val = JSON.parse(await AsyncStorage.getItem("panier"))
             setData(val)
             if (val != null) {
-                
+
                 updateSubtotal(val)
 
             }
@@ -31,16 +44,10 @@ const OrderScreen = () => {
     }
 
 
-    const [data, setData] = useState([]);
-    const [compteur, setCompteur] = useState(1)
-    const [disable, setDisable] = useState(false)
-    const navigate = useNavigation();
-    const frais = 10;
-    const [subtotal, setSubTotal] = useState(0)
 
     const deleteItem = async (id) => {
         let newData = data.filter(item => {
-                return item.id !== id 
+            return item.id !== id
         })
 
         updateSubtotal(newData)
@@ -49,55 +56,69 @@ const OrderScreen = () => {
 
     }
 
-    const updateSubtotal=(arr)=>{
+    const updateSubtotal = (arr) => {
         let somme = 0;
-        arr.forEach(item => {
-            somme += item.price * item.quantite
-            setSubTotal(somme)
-        })
+        if (arr.length !== 0) {
+            arr.forEach(item => {
+                somme += item.price * item.quantite
+                setSubTotal(somme)
+            })
+        } else setSubTotal(somme)
     }
 
     const ItemRender = ({ ligne }) => {
-        var swipeoutBtns = [
-            {
-              component: (
-                <View
-                    style={{
-                      flex: 1,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexDirection: 'column',
-                    }}
-                >
-                  <Icon
-                    name='trash-outline'
-                    style={{color:"white"}}
-                    />
-                </View>
-              ),
-              backgroundColor: '#ec4242',
-              onPress: () => {
-                deleteItem(ligne.id); 
-              },
-            },
-          ]
+        
         return (
-            <Swipeout right={swipeoutBtns}>  
-                <View style={styles.card}>
-                    <View style={styles.desc}>
-                        <Text style={styles.smtitle}>{ligne.name}</Text>
-                        <Text style={{ color: 'grey' }}>{ligne.restau}</Text>
-                        <View style={styles.flexOperation}>
-                            <Text style={styles.price}>{ligne.price} DHS</Text>
-                            <View style={styles.operation}>
-                                <Text>{ligne.quantite}</Text>
-                            </View>
+            <View style={styles.card}>
+                <View style={styles.desc}>
+                    <Text style={styles.smtitle}>{ligne.name}</Text>
+                    <Text style={{ color: 'grey' }}>{ligne.restauName}</Text>
+                    <View style={styles.flexOperation}>
+                        <Text style={styles.price}>{ligne.price} DHS</Text>
+                        <View style={styles.operation}>
+
+                            <Text>{ligne.quantite}</Text>
                         </View>
+
                     </View>
-                    <Image style={styles.Img} source={{ uri: ligne.image }} />
                 </View>
-            </Swipeout>
+
+                <Image style={styles.Img} source={{ uri: ligne.image }} />
+
+                <TouchableOpacity onPress={() => deleteItem(ligne.id)} key={`${ligne.id}`}>
+                    <Icon name='close' />
+                </TouchableOpacity>
+            </View>
         )
+    }
+
+
+    const addCommand = async () => {
+        setLoaded(true)
+
+        let idClient = await AsyncStorage.getItem("idClient")
+        setTimeout(() => {
+            axios.post(ip + `/commande/add/${idClient}`, data)
+                .then(async res => {
+                    setLoaded(false)
+                    setData([])
+                    setSubTotal(0)
+                    AsyncStorage.removeItem("panier")
+                })
+                .catch(err => console.log(err))
+
+
+            setVisible(true)
+            setTimeout(() => {
+
+                setVisible(false)
+            }, 2000)
+        }
+            , 1000)
+
+
+
+
     }
 
 
@@ -133,16 +154,44 @@ const OrderScreen = () => {
             </View>
             <View style={styles.buttons}>
                 <Pressable style={styles.buttonAddItem}
-                    onPress={() => navigate.navigate('HomeScreen')}
+                    onPress={() => AsyncStorage.clear()}
                 >
                     <Text style={styles.textAddItem}>Add items</Text>
                 </Pressable>
                 <Pressable style={styles.buttonCheckout}
-                    onPress={async () => await AsyncStorage.removeItem("panier")}
+                    onPress={addCommand}
                 >
-                    <Text style={styles.textCheckout}>Checkout</Text>
+                    {isloaded ?
+                        <ActivityIndicator
+                            style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            size='large'
+                            color={"white"}
+                        />
+                        :
+                        <Text style={styles.textCheckout}>Checkout</Text>
+                    }
                 </Pressable>
             </View>
+            <FancyAlert
+                visible={visible}
+                icon={<View style={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#28a745',
+                    borderRadius: 50,
+                    width: '100%',
+                }}><Text style={{ color: "white" }}>✔</Text></View>}
+                style={{ backgroundColor: 'white' }}
+            >
+                <Text style={{ marginTop: -16, marginBottom: 32 }}>Your commande has been added</Text>
+            </FancyAlert>
 
         </View>
     );
@@ -189,19 +238,18 @@ const styles = StyleSheet.create({
         width: 80,
         height: 50,
         borderRadius: 10,
-        marginStart: 100
+        marginStart: 130
     },
     operation: {
         alignItems: 'center',
         borderColor: '#e6dcdc',
         borderWidth: 1,
         borderRadius: 20,
-        width: 40,
+        width: 80,
         paddingStart: 5,
         paddingEnd: 4,
-        marginStart: 120,
-        fontSize: 25,
-        marginTop:10,
+        marginStart: 220,
+        fontSize: 25
     },
     flexOperation: {
         flexDirection: 'row',

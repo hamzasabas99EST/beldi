@@ -56,7 +56,7 @@ router.route('/logIn').post(async (req, res) => {
   let email = req.body.email
   let client = await Client.findOne({ "email": email })
 
-  if (client) res.json(client)
+  if (client) res.json(client._id)
   else res.status(404).send({ message: "mot de passe " })
 })
 

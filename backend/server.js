@@ -66,7 +66,7 @@ const affecterCommande = () => {
     .exec(async (err, count) => {
       let random = Math.floor(Math.random() * count)
       let commande = await Commande.findOne({ "status": "waiting" }).skip(random).populate("client", ["latitude", "longitude"])
-
+      
       if (commande) {
 
         var { latitude, longitude } = await commande.client
@@ -104,12 +104,12 @@ const affecterCommande = () => {
 setInterval(() => {
   checkLivreurs()
 
-  setTimeout(() => affecterCommande(), 2000)
+  setTimeout(() => affecterCommande(), 1000)
 
 
 
 
-}, 5000)
+}, 2000)
 
 
 

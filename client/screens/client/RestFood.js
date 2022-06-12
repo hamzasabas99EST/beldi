@@ -6,73 +6,7 @@ import axios from 'axios';
 import ip from '../../helpers/Ip';
 import CustomModal from '../../component/CustomModal';
 
-/*const Data = [
-  {
-    id: 1,
-    Key: 'Tacos De Lyon Gourmet1',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/repa1.png'),
-  },
-  {
-    id: 2,
-    Key: 'Tacos De Lyon Gourmet2',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/repa2.png'),
-  },
-  {
-    id: 3,
-    Key: 'Tacos De Lyon Gourmet3',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/repa3.png'),
-  },
-  {
-    id: 4,
-    Key: 'Tacos De Lyon Gourmet4',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/repa4.png'),
-  },
-];
-const Data1 = [
-  {
-    id: 1,
-    Key: 'Twister Box',
-    subtitle: 'Pizza,frites, boisson 1',
-    price: 42,
-    image: require('../../assets/all1.png'),
-  },
-  {
-    id: 2,
-    Key: 'Flag Box',
-    subtitle: 'Pizza,frites, boisson 2',
-    price: 46,
-    image: require('../../assets/all2.png'),
-  },
-  {
-    id: 3,
-    Key: 'Red Hight',
-    subtitle: 'Pizza,frites, boisson 3',
-    price: 25,
-    image: require('../../assets/all3.png'),
-  },
-  {
-    id: 4,
-    Key: 'Bland green',
-    subtitle: 'Pizza,frites, boisson 4',
-    price: 41,
-    image: require('../../assets/all4.png'),
-  },
-  {
-    id: 5,
-    Key: 'Atlantic Tacos',
-    subtitle: 'Pizza,frites, boisson 5',
-    price: 31,
-    image: require('../../assets/all5.png'),
-  },
-];*/
+
 const RestFood = () => {
 
 
@@ -82,7 +16,7 @@ const RestFood = () => {
   },[])
 
   const getPlats=async()=>{
-   await axios.get(ip + `/restaurants/${route.params.id}`)
+   await axios.get(ip + `/restaurants/plats/${route.params.id}`)
       .then( res => {
          setPlats(res.data)
          if(res.data[0].restaurant) setRestaurant(res.data[0].restaurant)
@@ -275,7 +209,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 100,
     alignItems: 'center',
-    paddingStart: 30
+    paddingStart: 30,
+    marginBottom:10
   },
   desc: {
     marginStart: 20
@@ -288,66 +223,7 @@ const styles = StyleSheet.create({
     height: 100,
     
   },
-  iconModal: {
-    backgroundColor: 'white',
-    marginTop: '-64%',
-    marginStart: '-104%',
-    borderRadius: 20,
-    padding: 6,
-    marginBottom: 160
-  },
-  modalView: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    width: Dimensions.get('window').width,
-    alignSelf: 'center',
-    marginTop: 202,
-    height: Dimensions.get('window').height / 2
-  },
-  imgModal: {
-    marginTop: -35,
-    marginBottom: 25,
-    borderRadius: 20,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height/4
-
-  },
-  operation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#e6dcdc',
-    borderWidth: 1,
-    borderRadius: 20,
-    width: 80,
-    justifyContent: 'space-between',
-    paddingStart: 4,
-    paddingEnd: 4,
-    marginStart: 220
-  },
-  buttModal: {
-    backgroundColor: 'white',
-    height: 176,
-    paddingStart: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: '#e6dcdc',
-    borderWidth: 1,
-  },
-  button: {
-    backgroundColor: '#ff5a00',
-    width: '54%',
-    height: 38,
-    marginTop: 20,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingStart: 10,
-    paddingEnd: 10
-  },
+ 
   whtext: {
     color: 'white'
   }
