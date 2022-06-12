@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from 'native-base'
 import {
   Text,
@@ -7,141 +7,159 @@ import {
   View,
   StyleSheet,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 
 } from 'react-native';
 import axios from 'axios';
 import ip from '../../helpers/Ip'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Data = [
-  {
-    id: 1,
-    Key: 'Tacos De Lyon Gourmet',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/rest_1.png'),
-    commandeMin: 39,
-    fraisLivraison: 5,
-    minTime: 35,
-    maxTime: 45
-  },
-  {
-    id: 2,
-    Key: 'Tacos De Lyon narcos',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/rest_2.png'),
-    commandeMin: 40,
-    fraisLivraison: 6,
-    minTime: 32,
-    maxTime: 44
-  },
-  {
-    id: 3,
-    Key: 'Tacos De Lyon beldi',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/rest_3.png'),
-    commandeMin: 72,
-    fraisLivraison: 3,
-    minTime: 25,
-    maxTime: 40
-  },
-  {
-    id: 4,
-    Key: 'Tacos De Lyon ensas',
-    subtitle: 'Tacos . Burger',
-    note: 4.1,
-    image: require('../../assets/rest_4.png'),
-    commandeMin: 25,
-    fraisLivraison: 10,
-    minTime: 36,
-    maxTime: 48
-  },
-];
+import * as Location from 'expo-location';
 
-export default class FlatLists extends React.Component {
+
+
+const HomeScreen = (props) => {
+
+
+  const { navigation } = props
+
+  useEffect(() => {
+
+    navigation.addListener('focus', async () =>  geRestaurants()   )
+
+  }, [])
+
+  const [search,setSearch]=useState(null)
+  const [restaurants, setRestaurants] = useState()
+  const [categories, setCategories] = useState()
+
+  const [isloaded, setIsLoaded] = useState(true)
+
   
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedItem: null,
-      renderData: []
-    };
+  const geRestaurants = async () => {
+    const city = await getCity()
+
+    if(city)   setIsLoaded(false)
+
+    await axios.get(ip + `/restaurants/${city}`)
+      .then(res => setRestaurants(res.data))
+      .catch(err => console.log(err.response))
+
+    await axios.get(ip + "/restaurants/get/categories")
+      .then(res => setCategories(res.data))
+      .catch(err => console.log(err.response.message))
+
+   
+
+   
+
+
   }
 
-  componentDidMount(){
-    axios.get(ip+"/restaurants")
-    .then(res=>this.setState({renderData:res.data}))
-    .catch(err=>console.log(err))
+  const getCity = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+      return
+    }
+
+    let { coords } = await Location.getCurrentPositionAsync({accuracy: 6});
+
+    if (coords) {
+      const { latitude, longitude } = coords
+      let response = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude
+      })
+
+      return response[0].city
+    }
+
+    return ''
   }
-  onPressHandler(id) {
-    let renderData = [...this.state.renderData];
-    for (let data of renderData) {
+
+
+  const onPressHandler = (id) => {
+    let renderData = [...restaurants];
+    for (let data of restaurants) {
       if (data._id == id) {
         data.selected = (data.selected == null) ? true : !data.selected;
         break;
       }
     }
-    this.setState({ renderData });
+    setRestaurants(renderData);
   }
 
-  render() {
+  const searchHandler = (name) => {
+    if (name != "") {
+      let filtred = restaurants.filter(item => item.name.toLowerCase().includes(name.toLowerCase()))
+      setSearch(filtred)
+    }
+    else setSearch(restaurants)
+  }
 
-    return (
-      <View style={styles.container}>
-        <View style={styles.search}>
-          <Image style={styles.icon} source={require('../../assets/search.png')} />
-          <TextInput placeholder="Search ..." />
-        </View>
-       <FlatList
-          style={styles.flatList}
-          horizontal={true}
-          data={[
-            { key: 'Devin' },
-            { key: 'Dan' },
-            { key: 'Dominic' },
-            { key: 'Jackson' },
-            { key: 'James' },
-            { key: 'Joel' },
-            { key: 'John' },
-            { key: 'Jillian' },
-            { key: 'Jimmy' },
-            { key: 'Julie' },
-          ]}
-          renderItem={({ item }) =>
-            <Text style={styles.item} onPress={() => alert(item.key)}>{item.key}</Text>
-          }
+  const data=search ? search: restaurants
+
+  return (
+    <View style={styles.container}>
+      {isloaded ?
+        <ActivityIndicator
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          size='large'
+          color={"black"}
         />
-        <FlatList
-          style={styles.restFlatList}
-          data={this.state.renderData}
-          keyExtractor={item => item._id}
-          renderItem={({ item }) =>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('RestFood',{id: item._id})}
-              style={styles.card}
-             >
-              <Image style={styles.imgRest} source={{uri:item.photo}} />
-              <View style={styles.cardButtom}>
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.sub}>{item.subtitle}</Text>
-                <View style={styles.not}>
-                  <Icon
-                    name={"star"}
-                    style={[styles.star, { color: item.selected == true ? "#f9ba07" : "#a9a9a9" }]}
-                    onPress={() => this.onPressHandler(item._id)}
-                  />
-                  <Text style={styles.textnote}>{item.note} . $</Text>
+
+        : <>
+          <View style={styles.search}>
+            <Image style={styles.icon} source={require('../../assets/search.png')} />
+            <TextInput placeholder="Search ..." onChangeText={text => searchHandler(text)} />
+          </View>
+          <FlatList
+            style={styles.flatList}
+            horizontal={true}
+            data={categories}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) =>
+              <Text style={styles.item} onPress={() => AsyncStorage.clear()}>{item.name}</Text>
+            }
+          />
+          <FlatList
+            style={styles.restFlatList}
+            data={data}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) =>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('RestFood', { id: item._id })}
+                style={styles.card}
+              >
+                <Image style={styles.imgRest} source={{ uri: item.photo }} />
+                <View style={styles.cardButtom}>
+                  <Text style={styles.title}>{item.name}</Text>
+                  <Text style={styles.sub}>{item.subtitle}</Text>
+                  <View style={styles.not}>
+                    <Icon
+                      name={"star"}
+                      style={[styles.star, { color: item.selected == true ? "#f9ba07" : "#a9a9a9" }]}
+                      onPress={() => onPressHandler(item._id)}
+                    />
+                    <Text style={styles.textnote}>{item.note} . $</Text>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          }
-        />
-      </View>
-    );
-  }
+              </TouchableOpacity>
+            }
+          />
+        </>
+      }
+    </View>
+  );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -220,3 +238,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   }
 });
+
+export default HomeScreen;
+

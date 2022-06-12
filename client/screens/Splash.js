@@ -2,11 +2,17 @@ import React from 'react'
 import {StyleSheet,View,Image,Dimensions} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Splash=()=> {
   const navigate = useNavigation();
-  setTimeout(()=>{},
-     10000
+  setTimeout(async()=>{
+    let id=await AsyncStorage.getItem("idClient")
+    if(id) navigate.navigate("Client")
+    else if(id==null)  navigate.navigate("Main")
+
+  },
+     5000
   )
   return (
     <View style={styles.container}>

@@ -18,8 +18,6 @@ const CustomModal = (props) => {
     //Compteur des plats
     const [compteur, setCompteur] = useState(1)
 
-    //Price totale
-    const [price, setPrice] = useState(1)
 
     const [disable, setDisable] = useState(false)
 
@@ -51,27 +49,28 @@ const CustomModal = (props) => {
 
         let panier = JSON.parse(await AsyncStorage.getItem("panier")) || []
         let checkProduit = false
-        let ligne_commande={"id":plat._id,"name":plat.name,"quantite":compteur,"restau":plat.restaurant.name,"price":plat.price,"image":plat.photo}
+        let ligne_commande = { "id": plat._id, "name": plat.name, "quantite": compteur, restau: plat.restaurant._id, "restauName": plat.restaurant.name, "price": plat.price, "image": plat.photo }
 
         setTimeout(async () => {
             if (panier.length === 0)
                 panier.push(ligne_commande)
             else {
-               checkProduit= panier.find(item => {
+                checkProduit = panier.find(item => {
                     if (item.id === ligne_commande.id) {
                         item.quantite += ligne_commande.quantite
                         return true;
                     }
-                    
+
                 })
-                if(!checkProduit) panier.push(ligne_commande)
+                if (!checkProduit) panier.push(ligne_commande)
             }
 
             await AsyncStorage.setItem('panier', JSON.stringify(panier))
                 .then(() => setLoaded(false))
-        }, 1000)
-        
-       
+        }, 3000)
+
+
+
 
 
     }
@@ -127,7 +126,14 @@ const CustomModal = (props) => {
                                     <Text style={styles.whtext}>Add to basket</Text>
                                     <Text style={styles.whtext}>{Math.ceil(plat.price * compteur)} Dhs </Text>
                                 </> :
-                                <Spinner style={{ alignItems: "center" }} color={"#00000"} />
+                                <Spinner style={{
+                                    flex: 1,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                                    color={"#00000"}
+                                />
                             }
 
                         </Pressable>

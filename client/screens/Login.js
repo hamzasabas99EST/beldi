@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Image, Pressable, TextInput, TouchableOpacity, Text } from 'react-native';
 import ip from '../helpers/Ip';
 import { Spinner, Icon } from 'native-base'
@@ -11,22 +11,22 @@ import axios from 'axios';
 
 
 const Login = (props) => {
-    const {navigation,route,isLogged}=props
+    const { navigation, route, isLogged } = props
     const [show, setShow] = useState(true);
 
     const [email, setEmail] = useState("")
     const [pwd, setPwd] = useState("")
     const [isLoaded, setLoaded] = useState(false)
     const [message, setMessage] = useState("")
-    const {msgParam}=route.params;
-    
-    useEffect(()=>{
-        if(msgParam) {
-           
-           setMessage(msgParam)
+    const { msgParam } = route.params;
+
+    useEffect(() => {
+        if (msgParam) {
+
+            setMessage(msgParam)
         }
-       
-    },[])
+
+    }, [])
 
 
     //Cette fonction pour authentifier par email et mot  de passe
@@ -47,12 +47,12 @@ const Login = (props) => {
                         .then(async res => {
                             setLoaded(false)
                             await AsyncStorage.setItem('idClient', res.data)
-                            await props.isLogged();
+                            await isLogged();
                             navigation.navigate("Client")
                         })
                         .catch(err => {
                             setLoaded(false)
-                            setMessage(err.response)
+                            setMessage(err.response.data.message)
                         })
                 }
                 , 2000)
@@ -74,8 +74,10 @@ const Login = (props) => {
                     email: res.user.email
                 }
                 await axios.post(ip + "/logIn", user)
-                    .then(res => {
-                        navigation.navigate("Client")
+                    .then(async res => {
+                        await isLogged();
+
+                        await navigation.navigate("Client")
 
                     })
                     .catch(err => {
@@ -88,15 +90,15 @@ const Login = (props) => {
     }
 
     //la verifiction syntaxe d'email
-    const checkEmail=(text)=>{
+    const checkEmail = (text) => {
         setEmail(text)
-        if(validator.isEmail(text)) setMessage("")
-        
+        if (validator.isEmail(text)) setMessage("")
+
         else setMessage("Invalide Email")
 
     }
 
-    const init=()=>{
+    const init = () => {
         setEmail("")
         setLoaded(false)
         setPwd("")
@@ -112,7 +114,7 @@ const Login = (props) => {
                 <TouchableOpacity onPress={() => navigation.navigate("Main")}>
                     <Image style={styles.icon} source={require('../assets/backbold.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {init(); navigation.navigate("Register")}}>
+                <TouchableOpacity onPress={() => { init(); navigation.navigate("Register") }}>
                     <Text style={styles.reg}>Register</Text>
                 </TouchableOpacity>
             </View>
@@ -124,7 +126,7 @@ const Login = (props) => {
             <View style={styles.main}>
                 {/*Message d'erreur*/}
                 {!message == "" &&
-                    <View style={[styles.err, (msgParam && message==msgParam) && {backgroundColor:"#1cc88a" }]} >
+                    <View style={[styles.err, (msgParam && message == msgParam) && { backgroundColor: "#1cc88a" }]} >
                         <Text style={styles.msg}>
                             {message}
                         </Text>
@@ -171,7 +173,7 @@ const Login = (props) => {
                     <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/flech.png')} />
                 </Pressable>
 
-               
+
             </View>
 
         </View>
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     err: {
-        backgroundColor:"#dc3545",
+        backgroundColor: "#dc3545",
         width: '80%',
         borderRadius: 40,
         height: '4%',
