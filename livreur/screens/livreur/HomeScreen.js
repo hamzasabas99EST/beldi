@@ -14,12 +14,13 @@ const HomeScreen = ({ navigation }) => {
     const [coordsLivreur, setCoordsLivreur] = useState()
     const [commandes, setCommandes] = useState([])
     const prevCoords = usePrevious(coordsLivreur)
+    const refMap = useRef(null)
 
 
     useEffect(() => {
         navigation.addListener('focus', () => getCommandesLivreur())
 
-        let interval = setInterval(() => getLivreurLocation(prevCoords), 1000 * 20)
+        let interval = setInterval(() => getLivreurLocation(prevCoords), 1000 * 60)
 
         return () => clearInterval(interval)
 
@@ -34,10 +35,7 @@ const HomeScreen = ({ navigation }) => {
                 let { latitudeL, longitudeL } = res.data.livreur
 
                 if (latitudeL && longitudeL) {
-                    await setCoordsLivreur({
-                        latitude: latitudeL,
-                        longitude: longitudeL
-                    })
+                    SetCoords(latitudeL, longitudeL)
                 } else getLivreurLocation(coordsLivreur)
 
 
@@ -72,12 +70,8 @@ const HomeScreen = ({ navigation }) => {
         let { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
 
         if (coordL != coords) {
-            setCoordsLivreur({
-                latitude: coords.latitude,
-                longitude: coords.longitude,
-                latitudeDelta: 0.5,
-                longitudeDelta: 0.5
-            })
+            SetCoords(coords.latitude, coords.longitude)
+
             let id = await AsyncStorage.getItem("idLivreur")
             let city = await getCity(coords.latitude, coords.longitude)
 
@@ -89,6 +83,28 @@ const HomeScreen = ({ navigation }) => {
 
     }
 
+    const SetCoords = (lat, long) => {
+        setCoordsLivreur({
+            latitude: lat,
+            longitude: long,
+            latitudeDelta: 0.5,
+            longitudeDelta: 0.5
+        })
+        refMap.current.animateCamera({
+            center: {
+                latitude: lat,
+                longitude: long,
+
+            },
+            zoom: 5,
+            heading: 0,
+            pitch: 0,
+            altitude: 5
+
+        })
+    }
+
+
 
 
     return (
@@ -96,10 +112,15 @@ const HomeScreen = ({ navigation }) => {
             {
                 <MapView
                     style={{ flex: 1 }}
-                    mapType="satellite"
+                    ref={refMap}
+
+
                 //  onPress={e=>console.log(e.nativeEvent.coordinate)}
                 >
-                    {coordsLivreur && <Marker coordinate={coordsLivreur} />}
+                    {coordsLivreur && <Marker coordinate={coordsLivreur} >
+                        <Image source={require("../../assets/livreur.png")} resizeMode="center"/>
+
+                    </Marker>}
 
                     {commandes.map(commande => {
                         let image = ""

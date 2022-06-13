@@ -190,7 +190,7 @@ const OrderScreen = () => {
                 }}><Text style={{ color: "white" }}>✔</Text></View>}
                 style={{ backgroundColor: 'white' }}
             >
-                <Text style={{ marginTop: -16, marginBottom: 32 }}>Your commande has been added</Text>
+                <Text style={{ marginTop: -16, marginBottom: 32 }}>Your Order has been added</Text>
             </FancyAlert>
 
         </View>

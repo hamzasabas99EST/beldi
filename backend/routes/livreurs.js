@@ -4,22 +4,19 @@ let Livreur = require("../models/livreur.model")
 let Lignescommande = require("../models/ligne_commande.model")
 const bcrypt = require("bcrypt");
 const Restaurant = require('../models/restaurant.model');
-<<<<<<< HEAD
-=======
 
->>>>>>> dbecf181e45435c4acfc607876eaa9d37a3517b7
 
 router.route("/updateCoords/:id").post(async (req, res) => {
 
-    let { lat,long,city } = req.body
+    let { lat, long, city } = req.body
 
     Livreur.findByIdAndUpdate(req.params.id, {
         latitudeL: lat,
         longitudeL: long,
-        "city":city
+        "city": city
     })
-    .then(() => res.json("YEs Yes YEs"))
-    
+        .then(() => res.json("YEs Yes YEs"))
+
 
 })
 
@@ -37,6 +34,12 @@ router.route("/login").post(async (req, res) => {
     else res.status(404).send({ message: "your username incorrect" })
 })
 
+
+router.route("/get/:id").get(async(req,res)=>{
+    Livreur.findById(req.params.id)
+    .then(livreur=>res.json(livreur))
+    .catch(error=>res.send("bad"))
+})
 router.route("/Commandes/:id").get(async (req, res) => {
     let id = req.params.id
     let livreur = await Livreur.findById(id)
@@ -55,9 +58,13 @@ router.route("/getDetailsCommande/:id").get(async (req, res) => {
     let ligne = await Lignescommande.find({ "commande": id })
         .populate("plat", "name")
         .populate("restaurant", "name")
+    
+        const Total=ligne.reduce((accumulator, item) => {
+            return accumulator + item.subTotal;
+          }, 0);
 
     await updateCommande(id)
-    res.json({ ligne })
+    res.json({ ligne,Total })
 
 
 })
@@ -87,34 +94,45 @@ const updateCommande = async (id) => {
 
 }
 
-router.route("/livred/:id").post(async (req, res) => {
+router.route("/payed/:id").post(async (req, res) => {
 
-    Commande.findByIdAndUpdate(req.params.id, { status: "livred" }, { new: true })
-    .then(res=>res.json("updated"))
-    .catch(err=>res.status(404).send("not updated"))
+    Commande.findByIdAndUpdate(req.params.id, { status: "payed" }, { new: true })
+        .then(res => res.json("updated"))
+        .catch(err => res.status(404).send("not updated"))
 
-   
+
 })
 
-/**  Restaurants plats et categories*/
-router.route("/restaurants/:city").get(async (req, res) => {
 
-<<<<<<< HEAD
-    Restaurant.find({ city: req.params.city })
-      .then(restaurants => res.json(restaurants))
-      .catch(() => res.json("error during operation"))
-  
-  })
-=======
 /**  Restaurants plats et categories*/
-router.route("/restaurants/:city").get(async (req, res) => {
->>>>>>> dbecf181e45435c4acfc607876eaa9d37a3517b7
+router.route("/restaurants/:id").get(async (req, res) => {
+    let id = req.params.id
+    let livreur = await Livreur.findById(id)
+    if (livreur) {
+        Restaurant.find({ city: livreur.city })
+            .then(restaurants => res.json(restaurants))
+            .catch(() => res.json("error during operation"))
 
-    Restaurant.find({ city: req.params.city })
-      .then(restaurants => res.json(restaurants))
-      .catch(() => res.json("error during operation"))
-  
-  })
-  
+
+    }
+})
+
+router.route('/delivries/:id').get(async(req,res)=>{
+    let id=req.params.id
+    Commande.find({"livreur":id})
+    .sort({"date_commande":-1}) 
+    .then(commandes=>res.json(commandes))
+    .catch(err=>res.status(404).json("error"))
+})
+
+router.route('/delivries/details/:id').get(async(req,res)=>{
+    let id=req.params.id
+    Lignescommande.find({"commande":id})
+    .populate("restaurant","name")
+    .populate("plat","name")
+    .then(lc=>res.json(lc))
+    .catch(err=>res.status(404).json("error"))
+})
+
 
 module.exports = router

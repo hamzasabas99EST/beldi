@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Pressable,Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { CheckBox } from 'react-native-elements'
-
+import { FancyAlert } from 'react-native-expo-fancy-alerts';
 import axios from 'axios';
 import ip from '../helpers/ip';
 
 const DetailsDileveryScreen = ({ route }) => {
+
+    const [details, setDetails] = useState()
+    const [Total, setTotal] = useState(0)
+    const [payed, setPayed] = useState(false)
+    const [loading, setIsLoading] = useState(false)
+    let { name } = route.params
+    let { id } = route.params
+
+
+
 
     useEffect(() => {
         getDetails()
         //console.log(route.params?.id)
     }, [])
 
-    const [details, setDetails] = useState()
-    let { name } = route.params
+
 
     const getDetails = () => {
-        let { id } = route.params
         axios(ip + `/getDetailsCommande/${id}`)
-            .then(res => setDetails(res.data.ligne))
+            .then(res => {
+                setDetails(res.data.ligne)
+                setTotal(res.data.Total)
+            })
             .catch(err => console.log(err))
 
     }
@@ -71,6 +82,21 @@ const DetailsDileveryScreen = ({ route }) => {
         )
     }
 
+    const paying = () => {
+        setIsLoading(true)
+        setTimeout(() => {
+            axios.post(ip + `/payed/${id}`)
+                .then(res => {
+                    if (res.status == 20)
+                    setIsLoading(false)    
+                    setPayed(true)
+
+                })
+                .catch(err => console.log(err.response.data))
+
+            setTimeout(() => setPayed(false), 2000)
+        }, 3000)
+    }
 
     return (
         <View style={styles.ContainerWrapper}>
@@ -82,7 +108,7 @@ const DetailsDileveryScreen = ({ route }) => {
                     <Item ligne={item} />
                 }
             />
-            <View style={styles.payment}>
+            {details && <View style={styles.payment}>
                 <Text style={styles.paymentSummary}>Payment summary</Text>
                 <View style={styles.arange}>
                     <View style={styles.start}>
@@ -91,17 +117,47 @@ const DetailsDileveryScreen = ({ route }) => {
                         <Text style={[styles.txt, { color: 'black' }]}>Total amount</Text>
                     </View>
                     <View style={styles.end}>
-                        <Text style={styles.txt}>15 DHs</Text>
+                        <Text style={styles.txt}>{Total} DHs</Text>
                         <Text style={styles.txt}>10 DHs</Text>
-                        <Text style={[styles.txt, { color: 'black' }]}>55 DHs</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>{Total + 10} DHs</Text>
                     </View>
                 </View>
-                <Pressable style={styles.buttonVelid}
-                    onPress={() => alert("salamoAlaikom")}
+                <TouchableOpacity style={styles.buttonVelid}
+                    onPress={() => paying()}
+                    disabled={isLoading}
                 >
-                    <Text style={styles.textValid}>Payed</Text>
-                </Pressable>
-            </View>
+                    {loading ?
+                        <ActivityIndicator
+                            style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            size='large'
+                            color={"white"}
+                        />
+                        :
+                        <Text style={styles.textValid}>Payed</Text>
+                    }
+                </TouchableOpacity>
+            </View>}
+
+            <FancyAlert
+                visible={payed}
+                icon={<View style={{
+                    flex: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#28a745',
+                    borderRadius: 50,
+                    width: '100%',
+                }}><Text style={{ color: "white" }}>✔</Text></View>}
+                style={{ backgroundColor: 'white' }}
+            >
+                <Text style={{ marginTop: -16, marginBottom: 32 }}>the order has been payed</Text>
+            </FancyAlert>
         </View>
     );
 }
@@ -110,12 +166,13 @@ const styles = StyleSheet.create({
     ContainerWrapper: {
         marginTop: 40,
         padding: 20,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        flex: 2
     },
     sectionTitle: {
         fontSize: 26,
         fontWeight: "bold",
-        marginBottom:20
+        marginBottom: 20
     },
     itemStyle: {
         backgroundColor: '#fff',
@@ -144,7 +201,7 @@ const styles = StyleSheet.create({
     },
     arange: {
         flexDirection: 'row',
-        justifyContent:'space-between'
+        justifyContent: 'space-between'
     },
     txt: {
         color: 'gray',
@@ -152,13 +209,14 @@ const styles = StyleSheet.create({
         marginBottom: 6,
         marginTop: 6
     },
-    payment:{
-        padding:15,
-        width:Dimensions.get('window').width-20,
-        alignSelf:'center',
-        marginBottom:20,
-        marginTop:50,
-        backgroundColor:'white',
+    payment: {
+        flex: 1,
+        padding: 15,
+        width: Dimensions.get('window').width - 20,
+        alignSelf: 'center',
+        marginBottom: 20,
+        marginTop: 50,
+        backgroundColor: 'white',
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -168,18 +226,18 @@ const styles = StyleSheet.create({
         shadowRadius: 7.49,
         elevation: 12,
     },
-    buttonVelid:{
-        backgroundColor:'#f9ba07',
-        alignItems:'center',
-        width:140,
-        paddingTop:8,
-        paddingBottom:8,
-        marginTop:4,
-        borderRadius:20,
-        alignSelf:'flex-end'
+    buttonVelid: {
+        backgroundColor: '#f9ba07',
+        alignItems: 'center',
+        width: 140,
+        paddingTop: 8,
+        paddingBottom: 8,
+        marginTop: 50,
+        borderRadius: 20,
+        alignSelf: 'flex-end'
     },
-    textValid:{
-        color:'white'
+    textValid: {
+        color: 'white'
     },
 
 })

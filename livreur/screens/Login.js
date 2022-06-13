@@ -29,12 +29,12 @@ const Login = props => {
                         setLoaded(false)
                         await AsyncStorage.setItem('idLivreur', res.data)
                         await props.isLogged();
-                        navigation.navigate("Livreur")
+                        props.navigation.navigate("Livreur")
                     }
 
 
                 })
-                .catch(err => {setLoaded(false); console.log(err)})
+                .catch(err => {setLoaded(false); setMessage(err.response.data.message)})
         }, 2000)
 
     }

@@ -1,12 +1,13 @@
-import React, {  useEffect, useState,useContext } from 'react';
-import { StyleSheet, View, Text, Image, Dimensions, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { StyleSheet, View, Text, Image, Dimensions, Pressable, ActivityIndicator,TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base'
 import axios from 'axios';
 import ip from '../../helpers/ip';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { AuthContext } from '../../helpers/auth';
 
 const ProfilScreen = ({ navigation }) => {
+    const { logout } = useContext(AuthContext)
 
     const [profil, setProfil] = useState()
     const [isLoading, setLoading] = useState(false)
@@ -16,8 +17,8 @@ const ProfilScreen = ({ navigation }) => {
     }, [])
 
     const getData = async () => {
-        let id = await AsyncStorage.getItem("idClient")
-        axios.get(ip + `/getClient/${id}`)
+        let id = await AsyncStorage.getItem("idLivreur")
+        axios.get(ip + `/get/${id}`)
             .then(async res => await setProfil(res.data))
 
 
@@ -30,7 +31,7 @@ const ProfilScreen = ({ navigation }) => {
 
                 await AsyncStorage.clear()
                 await logout()
-                navigation.navigate("Main")
+                navigation.navigate("Login")
             } catch (exception) {
                 alert("no")
             }
@@ -68,8 +69,8 @@ const ProfilScreen = ({ navigation }) => {
                                 style={styles.icon}
                             />
                         </Pressable>
-                        <Text style={styles.bold}>Mohamed Taoufiki</Text>
-                        <Text style={styles.email}>sim.taoufiki@gmail.com</Text>
+                        <Text style={styles.bold}>{profil?.name}</Text>
+                        <Text style={styles.email}>{profil?.cin}</Text>
                         <Pressable
                             style={styles.btnPress}
                             onPress={() => { alert("Edit Profil") }}
@@ -81,9 +82,9 @@ const ProfilScreen = ({ navigation }) => {
 
                         <View style={styles.line}></View>
 
-                        <Pressable onPress={() => navigation.push("MyOrders")}>
+                        <Pressable onPress={() => navigation.push("delivries")}>
                             <View style={styles.card}>
-                                <Text style={styles.cmdText}>Order History</Text>
+                                <Text style={styles.cmdText}>Order Dilevry</Text>
                                 <Icon
                                     name='cart'
                                     style={styles.icon}
@@ -92,7 +93,7 @@ const ProfilScreen = ({ navigation }) => {
                             </View>
                         </Pressable>
                         <View style={styles.line}></View>
-                        <Pressable onPress={() => Logout()}>
+                        <Pressable onPress={() => navigation.navigate("Tips")}>
                             <View style={styles.card}>
                                 <Text style={styles.cmdText}>About Us</Text>
                                 <Icon
@@ -104,7 +105,7 @@ const ProfilScreen = ({ navigation }) => {
                         </Pressable>
                         <View style={styles.line}></View>
 
-                        <Pressable onPress={() => Logout()}>
+                        <TouchableOpacity onPress={() => Logout()}>
                             <View style={styles.card}>
                                 <Text style={styles.cmdText}>Logout</Text>
                                 <Icon
@@ -113,7 +114,7 @@ const ProfilScreen = ({ navigation }) => {
                                 />
 
                             </View>
-                        </Pressable>
+                        </TouchableOpacity>
                         <View style={styles.line}></View>
 
 
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderBottomEndRadius: 15,
         borderBottomStartRadius: 15,
-        
+
     },
 })
 

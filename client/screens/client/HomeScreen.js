@@ -32,6 +32,8 @@ const HomeScreen = (props) => {
 
   const [search,setSearch]=useState(null)
   const [restaurants, setRestaurants] = useState()
+
+  
   const [categories, setCategories] = useState()
 
   const [isloaded, setIsLoaded] = useState(true)
@@ -57,34 +59,7 @@ const HomeScreen = (props) => {
 
   }
 
-<<<<<<< HEAD
-  componentDidMount(){
-    axios.get(ip+"/restaurants/Safi")
-    .then(res=>this.setState({renderData:res.data}))
-    .catch(err=>console.log(err))
-=======
-  const getCity = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return
-    }
-
-    let { coords } = await Location.getCurrentPositionAsync({accuracy: 6});
-
-    if (coords) {
-      const { latitude, longitude } = coords
-      let response = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude
-      })
-
-      return response[0].city
-    }
-
-    return ''
->>>>>>> dbecf181e45435c4acfc607876eaa9d37a3517b7
-  }
+ 
 
 
   const onPressHandler = (id) => {
