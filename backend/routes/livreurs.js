@@ -5,21 +5,7 @@ let Lignescommande = require("../models/ligne_commande.model")
 const bcrypt = require("bcrypt");
 const Restaurant = require('../models/restaurant.model');
 
-
-router.route("/updateCoords/:id").post(async (req, res) => {
-
-    let { lat, long, city } = req.body
-
-    Livreur.findByIdAndUpdate(req.params.id, {
-        latitudeL: lat,
-        longitudeL: long,
-        "city": city
-    })
-        .then(() => res.json("YEs Yes YEs"))
-
-
-})
-
+//Gestion Compte
 router.route("/login").post(async (req, res) => {
     let { username, pass } = req.body
     let livreur = await Livreur.findOne({ "username": username })
@@ -35,15 +21,43 @@ router.route("/login").post(async (req, res) => {
 })
 
 
-router.route("/get/:id").get(async(req,res)=>{
-    Livreur.findById(req.params.id)
-    .then(livreur=>res.json(livreur))
-    .catch(error=>res.send("bad"))
+
+//Update Coords and city
+router.route("/updateCoords/:id").post(async (req, res) => {
+
+    let { lat, long, city } = req.body
+
+    Livreur.findByIdAndUpdate(req.params.id, {
+        latitudeL: lat,
+        longitudeL: long,
+        "city": city
+    })
+        .then(() => res.json("YEs Yes YEs"))
+
+
 })
+
+//Get data of livreur
+
+router.route("/get/:id").get(async (req, res) => {
+    Livreur.findById(req.params.id)
+        .then(livreur => res.json(livreur))
+        .catch(error => res.send("bad"))
+})
+
+
+//Afficher les commande effectué au livreur
+
 router.route("/Commandes/:id").get(async (req, res) => {
     let id = req.params.id
     let livreur = await Livreur.findById(id)
     let commandes = await Commande.find({ "livreur": id })
+        .where({
+            'date_commande': {
+                $gte: new Date(new Date().setHours(00, 00, 00)),
+                $lte: new Date(new Date().setHours(23, 59, 59))
+            },
+        })
         .populate("client")
 
 
@@ -51,6 +65,8 @@ router.route("/Commandes/:id").get(async (req, res) => {
 
 })
 
+
+//Display details of order
 router.route("/getDetailsCommande/:id").get(async (req, res) => {
     let id = req.params.id
 
@@ -58,17 +74,18 @@ router.route("/getDetailsCommande/:id").get(async (req, res) => {
     let ligne = await Lignescommande.find({ "commande": id })
         .populate("plat", "name")
         .populate("restaurant", "name")
-    
-        const Total=ligne.reduce((accumulator, item) => {
-            return accumulator + item.subTotal;
-          }, 0);
+
+    const Total = ligne.reduce((accumulator, item) => {
+        return accumulator + item.subTotal;
+    }, 0);
 
     await updateCommande(id)
-    res.json({ ligne,Total })
+    res.json({ ligne, Total })
 
 
 })
 
+//Update status of details
 router.route("/updateLigne/:id").post(async (req, res) => {
 
     let lc = await Lignescommande.findByIdAndUpdate(req.params.id, { isReady: true }, { new: true })
@@ -79,26 +96,32 @@ router.route("/updateLigne/:id").post(async (req, res) => {
     }
 })
 
+
+//Update status of commande
 const updateCommande = async (id) => {
     let total = await Lignescommande.count().where({ "commande": id })
     let count = await Lignescommande.count().where({ "commande": id }).where({ "isReady": true })
     let commande = await Commande.findById(id)
 
-    if (count == 1) {
-        commande.status = "processing"
-    } else
-        if (count == total) commande.status = "on the road"
-
-    commande.save();
+    if (commande.status == "taken") {
+        if (count == 1) {
+            commande.status = "processing"
+        } else
+            if (count == total) commande.status = "on the road"
+        commande.save();
+    }
 
 
 }
 
+
+//Payed and checked
 router.route("/payed/:id").post(async (req, res) => {
 
-    Commande.findByIdAndUpdate(req.params.id, { status: "payed" }, { new: true })
-        .then(res => res.json("updated"))
-        .catch(err => res.status(404).send("not updated"))
+    let commande = await Commande.findById(req.params.id)
+    commande.status = "payed";
+    if (commande.save()) res.json("updated")
+    else res.status(404).send("nn")
 
 
 })
@@ -117,21 +140,26 @@ router.route("/restaurants/:id").get(async (req, res) => {
     }
 })
 
-router.route('/delivries/:id').get(async(req,res)=>{
-    let id=req.params.id
-    Commande.find({"livreur":id})
-    .sort({"date_commande":-1}) 
-    .then(commandes=>res.json(commandes))
-    .catch(err=>res.status(404).json("error"))
+
+//Display history of orders
+
+router.route('/delivries/:id').get(async (req, res) => {
+    let id = req.params.id
+    Commande.find({ "livreur": id })
+        .sort({ "date_commande": -1 })
+        .then(commandes => res.json(commandes))
+        .catch(err => res.status(404).json("error"))
 })
 
-router.route('/delivries/details/:id').get(async(req,res)=>{
-    let id=req.params.id
-    Lignescommande.find({"commande":id})
-    .populate("restaurant","name")
-    .populate("plat","name")
-    .then(lc=>res.json(lc))
-    .catch(err=>res.status(404).json("error"))
+//Display history of details orders
+
+router.route('/delivries/details/:id').get(async (req, res) => {
+    let id = req.params.id
+    Lignescommande.find({ "commande": id })
+        .populate("restaurant", "name")
+        .populate("plat", "name")
+        .then(lc => res.json(lc))
+        .catch(err => res.status(404).json("error"))
 })
 
 

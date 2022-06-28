@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const Livreur = require("./models/livreur.model")
 const Commande = require("./models/commande.model")
 const geodist = require('geodist')
+const moment = require('moment')
+
 
 
 
@@ -36,75 +38,88 @@ const LivreurtRouter = require('./routes/livreurs');
 app.use("/livreurs", LivreurtRouter)
 
 
-const checkLivreurs = () => {
+/*const checkLivreurs = () => {
   Livreur.count()
     .exec(async (err, count) => {
       let random = Math.floor(Math.random() * count)
       var livreur = await Livreur.findOne().skip(random)
       if (livreur) {
-        var nbr_commande = await Commande.count({ "livreur": livreur._id }).where("status").nin(['livred'])
+        var nbr_commande = await Commande.count({ "livreur": livreur._id }).where("status").nin(['payed'])
           .where({
             'date_commande': {
               $gte: new Date(new Date().setHours(00, 00, 00)),
               $lte: new Date(new Date().setHours(23, 59, 59))
             },
           })
-       if (nbr_commande == 3) {
+        if (nbr_commande == 3) {
           livreur.etat = "busy"
         } else livreur.etat = "free"
         livreur.save()
+
+      }
+
+    })
+
+
+}*/
+
+const affecterCommande = async () => {
+  const today = moment().startOf('day')
+
+  let commandes = await Commande.find().where({
+    'date_commande': {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf('day').toDate()
+    },
+    "status": "waiting"
+  })
+  let random = Math.floor(Math.random() * commandes.length)
+  let commande = await Commande.findOne({ "status": "waiting" }).skip(random).populate("client", ["latitude", "longitude"])
+  
+ 
+
+  if (commande) {
+
+    var { latitude, longitude } = await commande.client
+
+    Livreur.count({ "etat": "free" })
+
+      .exec(async (err, count) => {
         
-      }
+        let random = Math.floor(Math.random() * count)
+        let livreur = await Livreur.findOne().skip(random).where({"etat":"free"})
+       
 
-    })
+        if (livreur.latitudeL) {
 
+          let { latitudeL, longitudeL } = await livreur
+          var dist = geodist({ latitude, longitude }, { latitudeL, longitudeL }, { unit: 'km', limit: 15 })
 
-}
-
-const affecterCommande = () => {
-  Commande.count()
-    .exec(async (err, count) => {
-      let random = Math.floor(Math.random() * count)
-      let commande = await Commande.findOne({ "status": "waiting" }).skip(random).populate("client", ["latitude", "longitude"])
-      
-      if (commande) {
-
-        var { latitude, longitude } = await commande.client
-
-        Livreur.count()
-
-          .exec(async (err, count) => {
-
-            let random = Math.floor(Math.random() * count)
-            let livreur = await Livreur.findOne().skip(random)
-
-            if (livreur.etat == "free") {
-
-              let { latitudeL, longitudeL } = await livreur
-              var dist = geodist({ latitude, longitude }, { latitudeL, longitudeL }, { unit: 'km', limit: 20 })
-
-              if (dist) {
-                commande.livreur = livreur._id
-                commande.status = "taken"
-                commande.save()
-
-              }
-
-            }
+          if (dist) {
+            livreur.etat = "busy"
+            commande.livreur = livreur._id
+            commande.status = "taken"
+            livreur.save()
+            commande.save()
 
 
-          })
+          }
+        } else console.log("no data")
 
-      }
-    })
+
+
+      })
+
+  }
+
 }
 
 
 
 setInterval(() => {
-  checkLivreurs()
+  //checkLivreurs()
 
-  setTimeout(() => affecterCommande(), 1000)
+  affecterCommande()
 
 
 

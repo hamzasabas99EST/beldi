@@ -80,7 +80,7 @@ router.route('/CodeConfirmation').post(async (req, res) => {
     },
     auth: {
       user: 'beldi.ensas@gmail.com',
-      pass: 'MINIprojet2022 '
+      pass: 'mklzscwhqpxtykph'
     }
   });
 
@@ -98,7 +98,7 @@ router.route('/CodeConfirmation').post(async (req, res) => {
     }
     transporter.sendMail(mailOption, function (error, info) {
       if (error) {
-        res.json("Your Email doesn't exist")
+        res.json(error)
       } else res.json({ code: code_activation, message: "Please check your email" })
     })
 
@@ -225,10 +225,10 @@ router.route("/commande/get/:id/:date").get(async (req, res) => {
     },
 
   })
-    .where("status")
+    .where({ "status": "on the road" })
     .sort('date_commande')
-    .populate("client",["latitude","longitude"])
-    .populate("livreur",["latitudeL","longitudeL","name"])
+    .populate("client", ["latitude", "longitude"])
+    .populate("livreur", ["latitudeL", "longitudeL", "name"])
 
   if (commande != null) res.json(commande)
   else res.status(404).send({ message: "no commande today" })
