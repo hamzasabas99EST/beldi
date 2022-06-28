@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { StyleSheet, ScrollView, View, Text, SafeAreaView, Pressable, Modal, FlatList, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Platform, Pressable, Modal, Image, Dimensions } from 'react-native';
 import { Spinner, Icon } from 'native-base'
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 
@@ -13,7 +13,9 @@ const CustomModal = (props) => {
 
     const { plat } = props
 
-    const navigation = useNavigation()
+    useEffect(()=>{
+     
+    },[plat])
 
     //Compteur des plats
     const [compteur, setCompteur] = useState(1)
@@ -78,7 +80,7 @@ const CustomModal = (props) => {
     return (
         <View>
             <Modal
-                animationType="slide"
+                animationType={Platform.OS=="ios"? "slide": "none"}
                 transparent={true}
                 visible={props.isopen}
                 onRequestClose={close}

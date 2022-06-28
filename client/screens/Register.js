@@ -10,8 +10,8 @@ import validator from 'validator';
 
 
 
-const Register = ({navigation}) => {
-    
+const Register = ({ navigation }) => {
+
     const [show, setShow] = useState(true);
     const [email, setEmail] = useState("")
     const [name, setName] = useState("")
@@ -73,7 +73,7 @@ const Register = ({navigation}) => {
     //Cette fonction pour vérifier l'existance d'email dans le bd
     const checkDuplicate = (email) => {
 
-       
+
         const client = {
             "email": email
         }
@@ -87,7 +87,7 @@ const Register = ({navigation}) => {
 
     }
 
-    const init=()=>{
+    const init = () => {
         setEmail("")
         setName("")
         setLoaded(false)
@@ -127,6 +127,8 @@ const Register = ({navigation}) => {
                     onChangeText={text => setName(text)}
                     value={name}
                     autoCapitalize='none'
+                    placeholderTextColor={"gray"}
+
                 />
 
                 {/*Input Email*/}
@@ -136,6 +138,8 @@ const Register = ({navigation}) => {
                     onChangeText={text => checkEmail(text)}
                     value={email}
                     autoCapitalize='none'
+                    placeholderTextColor={"gray"}
+
                 />
 
                 {/*Input Password*/}
@@ -146,6 +150,8 @@ const Register = ({navigation}) => {
                         placeholder="Password"
                         onChangeText={text => setPwd(text)}
                         value={pwd}
+                        placeholderTextColor={"gray"}
+
                     />
                     <Icon
                         name={show ? "eye" : "eye-off"}
@@ -173,7 +179,7 @@ const Register = ({navigation}) => {
                     <Text style={styles.txtbutton}>Continue with Google</Text>
                     <Image style={[styles.icon, { marginRight: 0 }]} source={require('../assets/flech.png')} />
                 </Pressable>
-                
+
             </View>
         </View>
     )

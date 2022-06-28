@@ -26,23 +26,23 @@ const HomeScreen = (props) => {
 
   useEffect(() => {
 
-    navigation.addListener('focus', async () =>  geRestaurants()   )
+    navigation.addListener('focus', async () => geRestaurants())
 
   }, [])
 
-  const [search,setSearch]=useState(null)
+  const [search, setSearch] = useState(null)
   const [restaurants, setRestaurants] = useState()
 
-  
+
   const [categories, setCategories] = useState()
 
   const [isloaded, setIsLoaded] = useState(true)
 
-  
+
   const geRestaurants = async () => {
     const city = await getCity()
 
-    if(city)   setIsLoaded(false)
+    if (city) setIsLoaded(false)
 
     await axios.get(ip + `/restaurants/${city}`)
       .then(res => setRestaurants(res.data))
@@ -52,14 +52,41 @@ const HomeScreen = (props) => {
       .then(res => setCategories(res.data))
       .catch(err => console.log(err.response.message))
 
-   
 
-   
+
+
 
 
   }
 
- 
+
+  const getCity = async () => {
+
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+      return
+    }
+
+    let { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+
+    if (coords) {
+      let { latitude, longitude } = coords
+      
+      let response = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude
+      })
+
+      return response[0].city
+    }
+
+
+
+
+    return ''
+  }
+
 
 
   const onPressHandler = (id) => {
@@ -81,7 +108,7 @@ const HomeScreen = (props) => {
     else setSearch(restaurants)
   }
 
-  const data=search ? search: restaurants
+  const data = search ? search : restaurants
 
   return (
     <View style={styles.container}>

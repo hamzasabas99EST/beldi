@@ -25,7 +25,7 @@ const ResetPwd = ({ navigation }) => {
     const [etat, setEtat] = useState(false)
 
     // 
-    const [err,setErr]=useState(false)
+    const [err, setErr] = useState(false)
     const [message, setMessage] = useState("")
 
 
@@ -57,7 +57,7 @@ const ResetPwd = ({ navigation }) => {
                 if (tempCode != code) {
                     setErr(true)
                     setLoaded(false)
-                    setMessage("le code ne correspond pas ")
+                    setMessage("Incorrect Code ")
 
 
                 }
@@ -74,9 +74,9 @@ const ResetPwd = ({ navigation }) => {
         setEmail(text)
         if (validator.isEmail(text)) {
             setErr(false)
-    
+
             setMessage("")
-            
+
         }
 
         else {
@@ -108,25 +108,28 @@ const ResetPwd = ({ navigation }) => {
                         </Text>
                     </View>
                 }
+                {!etat ?
+                    <TextInput style={styles.input}
+                        placeholder="Email" value={email}
+                        onChangeText={(text) => checkEmail(text)}
+                        autoCapitalize='none'
+                        placeholderTextColor={"gray"}
 
-                <TextInput style={styles.input}
-                    placeholder="Email" value={email}
-                    onChangeText={(text) => checkEmail(text)}
-                    autoCapitalize='none'
-                    editable={!etat}
-                />
-
-                <View style={[styles.input, styles.passwd]}>
-                    <TextInput
-                        value={code}
-                        onChangeText={(text) => setCode(text)}
-                        placeholder="Code : XXXXXX"
-                        keyboardType="numeric"
-                        editable={etat}
-                        maxLength={6}
                     />
+                    :
+                    <View style={[styles.input, styles.passwd]}>
+                        <TextInput
+                            value={code}
+                            onChangeText={(text) => setCode(text)}
+                            placeholder="Code : XXXXXX"
+                            keyboardType="numeric"
+                            editable={etat}
+                            maxLength={6}
+                            placeholderTextColor={"gray"}
 
-                </View>
+                        />
+
+                    </View>}
 
                 {/*Button sign IN normal*/}
 

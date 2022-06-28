@@ -43,7 +43,7 @@ const TrackScreen = (props) => {
 
                 }
             })
-            .catch(err => console.log(err.response))
+            .catch(err => getUserLocation(0, 0))
 
 
     }
@@ -113,7 +113,6 @@ const TrackScreen = (props) => {
                 initialRegion={coordinatesClient}
                 ref={refMap}
                 mapType="mutedStandard"
-
             >
                 {coordinatesClient &&
                     <Marker

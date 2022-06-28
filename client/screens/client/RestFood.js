@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, ScrollView, View, Text, SafeAreaView, Pressable, Modal, FlatList, Image, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, SafeAreaView, Pressable, Modal, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base'
 import { useRoute } from "@react-navigation/native";
 import axios from 'axios';
@@ -12,14 +12,14 @@ const RestFood = () => {
 
   useEffect(() => {
     getPlats()
-    
-  },[])
 
-  const getPlats=async()=>{
-   await axios.get(ip + `/restaurants/plats/${route.params.id}`)
-      .then( res => {
-         setPlats(res.data)
-         if(res.data[0].restaurant) setRestaurant(res.data[0].restaurant)
+  }, [])
+
+  const getPlats = async () => {
+    await axios.get(ip + `/restaurants/plats/${route.params.id}`)
+      .then(res => {
+        setPlats(res.data)
+        if (res.data[0].restaurant) setRestaurant(res.data[0].restaurant)
       })
       .catch(err => console.log(err))
   }
@@ -27,29 +27,29 @@ const RestFood = () => {
   const [plats, setPlats] = useState([])
   const [platModal, setplatModal] = useState([])
   const [restaurant, setRestaurant] = useState()
- 
+
 
   //Visiblite de modele
   const [modal, setModal] = useState(false);
 
-  const route=useRoute(); 
+  const route = useRoute();
 
-  const closeModal=()=>{
-      setModal(false)
+  const closeModal = () => {
+    setModal(false)
   }
 
-  const openModal=(item)=>{
+  const openModal = (item) => {
     setplatModal(item)
     setModal(true)
   }
-  
+
 
   return (
 
     <ScrollView
       style={styles.container}>
       <SafeAreaView style={styles.header}>
-        <Image style={styles.imgRest} source={{ uri:restaurant?.photo }} />
+        <Image style={styles.imgRest} source={{ uri: restaurant?.photo }} />
         <Text style={styles.preTime}>30 MIN</Text>
         <Text style={styles.title}>{restaurant?.name}</Text>
         <View style={styles.not}>
@@ -90,17 +90,17 @@ const RestFood = () => {
           keyExtractor={item => item._id.toString()}
           renderItem={({ item }) =>
             <View>
-              <CustomModal isopen={modal}  plat={platModal} isclose={closeModal}/>
-              <Pressable
-                onPress={()=>{setModal(true); setplatModal(item)}}
+              <CustomModal isopen={modal} plat={platModal} isclose={closeModal} />
+              <TouchableOpacity
+                onPress={() => { setplatModal(item); setModal(true); }}
                 style={styles.allCard}>
-                <Image style={styles.allImg} source={{uri:item?.photo}} />
+                <Image style={styles.allImg} source={{ uri: item?.photo }} />
                 <View style={styles.desc}>
                   <Text style={styles.smtitle}>{item.name}</Text>
                   <Text style={{ color: 'grey' }}>{item.extra}</Text>
                   <Text style={styles.price}>{item.price} DHS</Text>
                 </View>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           }
         />
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width:'100%',
+    width: '100%',
     backgroundColor: 'white',
     paddingBottom: 10
   },
@@ -167,15 +167,15 @@ const styles = StyleSheet.create({
     color: 'black'
   },
 
-  card:{
-    backgroundColor:'white',
-    alignItems:'center',
-    height:192,
-    marginStart:7,
-    marginEnd:7,
-    width:166,
-    borderRadius:12
-},
+  card: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    height: 192,
+    marginStart: 7,
+    marginEnd: 7,
+    width: 166,
+    borderRadius: 12
+  },
   img: {
     width: '100%',
     height: 100,
@@ -190,7 +190,8 @@ const styles = StyleSheet.create({
   smtitle: {
     color: 'black',
     fontSize: 15,
-    alignItems:"center" 
+    alignItems: "center"
+    
   },
   smsub: {
     color: 'gray'
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     height: 100,
     alignItems: 'center',
     paddingStart: 30,
-    marginBottom:10
+    marginBottom: 10
   },
   desc: {
     marginStart: 20
@@ -221,9 +222,9 @@ const styles = StyleSheet.create({
   allImg: {
     width: '25%',
     height: 100,
-    
+
   },
- 
+
   whtext: {
     color: 'white'
   }

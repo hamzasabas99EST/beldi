@@ -69,14 +69,13 @@ const Login = (props) => {
 
         Google.logInAsync(google)
             .then(async res => {
-                console.log(res.user)
                 const user = {
                     email: res.user.email
                 }
                 await axios.post(ip + "/logIn", user)
                     .then(async res => {
+                        await AsyncStorage.setItem('idClient', res.data)
                         await isLogged();
-
                         await navigation.navigate("Client")
 
                     })
@@ -138,6 +137,7 @@ const Login = (props) => {
                     placeholder="Email" value={email}
                     onChangeText={(text) => checkEmail(text)}
                     autoCapitalize='none'
+                    placeholderTextColor={"gray"}
                 />
 
                 {/*Input password*/}
@@ -145,7 +145,9 @@ const Login = (props) => {
                     <TextInput
                         secureTextEntry={show}
                         value={pwd}
-                        onChangeText={(text) => setPwd(text)} placeholder="Password" />
+                        onChangeText={(text) => setPwd(text)} placeholder="Password" 
+                    placeholderTextColor={"gray"}
+                    />
                     <Icon
                         name={show ? "eye" : "eye-off"}
                         style={{ color: '#a9a9a9', position: 'absolute', left: '95%', fontSize: 20 }}
@@ -264,17 +266,18 @@ const styles = StyleSheet.create({
     },
     err: {
         backgroundColor: "#dc3545",
-        width: '80%',
+        width: 300,
         borderRadius: 40,
-        height: '4%',
-        justifyContent: "center"
+        height: 30,
+        justifyContent: "center",
 
 
     },
     msg: {
         textAlign: 'center', // <-- the magic
-        fontSize: 15,
-        color: "#fff"
+        fontSize: 13,
+        color: "#fff",
+        padding: 5
     }
 });
 export default Login;

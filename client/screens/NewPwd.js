@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View,  Pressable, TextInput, Text } from 'react-native';
+import { StyleSheet, View, Pressable, TextInput, Text } from 'react-native';
 import { Icon } from "native-base";
 
 
@@ -31,19 +31,19 @@ const NewPwd = ({ navigation, route }) => {
         e.preventDefault();
         setLoaded(true)
         setTimeout(() => {
-            let user={
-                "email":email,
-                 "pass":pwd
+            let user = {
+                "email": email,
+                "pass": pwd
             }
-            axios.post(ip+"/UpdatePwd",user)
-            .then(res=>{
-                setLoaded(false)
-                navigation.replace("Login",{msgParam:res.data})
-            })
-            .catch(err=>{
-                console.log(err.response)
-                setLoaded(false)
-            })
+            axios.post(ip + "/UpdatePwd", user)
+                .then(res => {
+                    setLoaded(false)
+                    navigation.replace("Login", { msgParam: res.data })
+                })
+                .catch(err => {
+                    console.log(err.response)
+                    setLoaded(false)
+                })
         }, 2000)
 
 
@@ -80,11 +80,13 @@ const NewPwd = ({ navigation, route }) => {
 
                 <View style={[styles.input, styles.passwd]}>
 
-                    <TextInput 
+                    <TextInput
                         placeholder="Nouveau Mot de passe" value={pwd}
                         onChangeText={(text) => setPwd(text)}
                         autoCapitalize='none'
                         secureTextEntry={show}
+                        placeholderTextColor={"gray"}
+
 
                     />
                     <Icon
@@ -100,6 +102,8 @@ const NewPwd = ({ navigation, route }) => {
                         onChangeText={text => checkPwd(text)}
                         autoCapitalize='none'
                         secureTextEntry={show1}
+                        placeholderTextColor={"gray"}
+
                     />
                     <Icon
                         name={show1 ? "eye" : "eye-off"}
