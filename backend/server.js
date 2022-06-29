@@ -66,17 +66,17 @@ app.use("/livreurs", LivreurtRouter)
 const affecterCommande = async () => {
   const today = moment().startOf('day')
 
-  let commandes = await Commande.find().where({
+  let commandes = await Commande.find()
+  let random = Math.floor(Math.random() * commandes.length)
+  let commande = await Commande.findOne({
     'date_commande': {
       $gte: today.toDate(),
       $lte: moment(today).endOf('day').toDate()
     },
     "status": "waiting"
-  })
-  let random = Math.floor(Math.random() * commandes.length)
-  let commande = await Commande.findOne({ "status": "waiting" }).skip(random).populate("client", ["latitude", "longitude"])
-  
- 
+  }).skip(random).populate("client", ["latitude", "longitude"])
+
+
 
   if (commande) {
 
@@ -85,10 +85,10 @@ const affecterCommande = async () => {
     Livreur.count({ "etat": "free" })
 
       .exec(async (err, count) => {
-        
+
         let random = Math.floor(Math.random() * count)
-        let livreur = await Livreur.findOne().skip(random).where({"etat":"free"})
-       
+        let livreur = await Livreur.findOne().skip(random).where({ "etat": "free" })
+
 
         if (livreur.latitudeL) {
 
