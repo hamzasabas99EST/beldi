@@ -8,6 +8,7 @@ import Livreur from './screens/livreur/Livreur';
 import DetailsDileveryScreen from './component/DetailsDileveryScreen';
 import Tips from './component/Tips';
 import MyDeliveries from './screens/livreur/MyDeliveries';
+import AboutUs from './screens/livreur/AboutUs';
 
 
 const Stack = createNativeStackNavigator();
@@ -20,14 +21,21 @@ const App = () => {
     }
   }))
   const [isLogged, useLogged] = useState(false)
-  const [onBoarded,setOnboarded]=useState(false)
-
+  const [onBoarded, setOnboarded] = useState(false)
 
 
   useEffect(() => {
+    isVisited();
     checkStorage();
   }, []);
 
+  const isVisited = async () => {
+
+    let first = await AsyncStorage.getItem("Visited");
+    first ? setOnboarded(false) : setOnboarded(true)
+
+    //console.log(onBoarded)
+  }
   const checkStorage = async () => {
     let val = await AsyncStorage.getItem("idLivreur")
     if (val != null) {
@@ -35,14 +43,15 @@ const App = () => {
     }
   }
 
-  if(onBoarded){
-    return (
-      <Tips></Tips>
-    );
-  }
 
   const SetLoggedIn = () => {
     useLogged(true)
+  }
+
+  if (onBoarded) {
+    return (
+      <Tips closed={()=>setOnboarded(false)}></Tips>
+    );
   }
 
   return (
@@ -65,6 +74,7 @@ const App = () => {
               <Stack.Screen name="Details" component={DetailsDileveryScreen} />
               <Stack.Screen name="Tips" component={Tips} />
               <Stack.Screen name="delivries" component={MyDeliveries} />
+              <Stack.Screen name="About" component={AboutUs} />
 
             </>
 

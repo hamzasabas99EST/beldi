@@ -91,8 +91,8 @@ router.route("/updateLigne/:id").post(async (req, res) => {
     let lc = await Lignescommande.findByIdAndUpdate(req.params.id, { isReady: true }, { new: true })
 
     if (lc.commande != null) {
-        await updateCommande(lc.commande)
-        res.json(lc.isReady)
+        let status=await updateCommande(lc.commande)
+        res.json({ready:lc.isReady,status:status})
     }
 })
 
@@ -106,11 +106,18 @@ const updateCommande = async (id) => {
     if (commande.status == "taken") {
         if (count == 1) {
             commande.status = "processing"
-        } else
-            if (count == total) commande.status = "on the road"
-        commande.save();
+        } 
     }
 
+    if (commande.status == "processing"){
+
+        if (count == total) 
+            commande.status = "on the road"
+    }
+    
+    commande.save();
+
+    return commande.status;
 
 }
 
@@ -119,8 +126,11 @@ const updateCommande = async (id) => {
 router.route("/payed/:id").post(async (req, res) => {
 
     let commande = await Commande.findById(req.params.id)
+    let livreur=await Livreur.findById(commande.livreur)
+    
     commande.status = "payed";
-    if (commande.save()) res.json("updated")
+    livreur.etat="free"
+    if (commande.save() && livreur.save()) res.json(commande.status)
     else res.status(404).send("nn")
 
 

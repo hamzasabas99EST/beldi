@@ -29,7 +29,7 @@ const ProfilScreen = ({ navigation }) => {
         setTimeout(async () => {
             try {
 
-                await AsyncStorage.clear()
+                await AsyncStorage.removeItem("idLivreur")
                 await logout()
                 navigation.navigate("Login")
             } catch (exception) {
@@ -93,7 +93,7 @@ const ProfilScreen = ({ navigation }) => {
                             </View>
                         </Pressable>
                         <View style={styles.line}></View>
-                        <Pressable onPress={() => navigation.navigate("Tips")}>
+                        <Pressable onPress={() => navigation.navigate("About")}>
                             <View style={styles.card}>
                                 <Text style={styles.cmdText}>About Us</Text>
                                 <Icon

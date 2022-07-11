@@ -4,6 +4,9 @@ let Livreur = require('../models/livreur.model');
 let Restaurant = require('../models/restaurant.model')
 let Plat =require('../models/plat.model')
 let Categorie =require('../models/categorie.model')
+let Commande=require('../models/commande.model')
+let Client=require('../models/client.model');
+const Ligne_Commande = require('../models/ligne_commande.model');
 
 
 router.route("/login").post(async (req, res) => {
@@ -118,7 +121,33 @@ router.route("/addPlat").post(async (req, res) => {
 
 
 
+
 /*fin Gestion Restaurant **/
+
+router.route("/getCommandes").get(async (req, res) => {
+
+    Commande.find()
+    .populate("livreur","name")
+    .populate("client","name")
+    .then(commandes=>res.json(commandes))
+    .catch(err=>res.json(err))
+
+})
+
+
+router.route("/getCommandes/Details/:id").get(async (req, res) => {
+
+    Ligne_Commande.findById(req.params.id)
+    .populate("restaurant","name")
+    .populate("plat","name")
+    .then(lc=>res.json(lc))
+    .catch(err=>res.json(err))
+
+})
+
+
+
+
 
 
 

@@ -41,7 +41,7 @@ const DetailModal = (props) => {
                 <View style={styles.itemLeft}>
 
                     <View style={{ marginTop: 5 }}>
-                        <Text style={{ fontSize: 20 }}>{data.plat.name}</Text>
+                        <Text style={{ fontSize: 15,fontWeight:"bold" }}>{data.plat.name}</Text>
                         <Text style={{ marginTop: 5, color: "#f9ba07" }}>{data.restaurant.name}</Text>
                     </View>
 
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         flexWrap: "wrap",
+        fontSize:15
     },
     modalView: {
         backgroundColor: "rgb(55,58,71)",

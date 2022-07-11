@@ -1,40 +1,37 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
 import { View, Text, Image, StyleSheet, StatusBar, Dimensions } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import { Icon } from 'react-native-elements';
 
 
 const Tips = (props) => {
 
 
     const slides = [
+
         {
             key: 'one',
-            title: '',
-            text: 'Thank you for joining us ',
+            title: 'Thank you for joining us',
+            text: ' ',
             image: require('../assets/tajine_.png'),
             backgroundColor: '#000',
         },
         {
             key: 'two',
-            title: 'As our Delivery',
-            text: 'You should be able to ',
+            title: 'As a Delivery',
+            text: 'You must always be ready to move from a restaurant to the others',
             image: require('../assets/2.png'),
             backgroundColor: '#000',
         },
         {
             key: 'three',
             title: 'Satisfied customers',
-            text: 'With our services',
+            text: 'With our services the customer will be able to pay after you delivered the food',
             image: require('../assets/3.png'),
             backgroundColor: '#000',
         },
-        {
-            key: 'four',
-            title: 'Rocket guy',
-            text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
-            image: require('../assets/livreur.png'),
-            backgroundColor: '#000',
-        }
+
     ];
 
     const renderItem = ({ item }) => {
@@ -48,8 +45,40 @@ const Tips = (props) => {
     }
 
 
+    const nextButton = () => {
+        return (
+            <View style={styles.buttonCircle}>
+                <Icon
+                    name="arrow-forward-outline"
+                    color="rgba(255, 255, 255, .9)"
+                    size={24}
+                    type='ionicon'
 
-    const onDone = () => alert("done")
+                />
+            </View>
+        );
+    }
+
+    const onDone = async () => {
+        await AsyncStorage.setItem("Visited", "Yess")
+            .then(() =>
+                props.closed()
+            )
+    }
+
+    const renderDoneButton = () => {
+        return (
+            <View style={styles.buttonCircle}>
+                <Icon
+                    name="checkmark-outline"
+                    color="rgba(255, 255, 255, .9)"
+                    size={24}
+                    type='ionicon'
+
+                />
+            </View>
+        );
+    }
 
     return (
         <View style={{ flex: 1 }}>
@@ -58,6 +87,10 @@ const Tips = (props) => {
                 keyExtractor={(item) => item.key}
                 renderItem={renderItem}
                 data={slides}
+                onDone={onDone}
+                renderDoneButton={renderDoneButton}
+                renderNextButton={nextButton}
+                activeDotStyle={{backgroundColor:"#f9ba07"}}
             />
         </View>
 
@@ -74,8 +107,8 @@ const styles = StyleSheet.create({
 
     },
     image: {
-        width:Dimensions.get("screen").width,
-        height:Dimensions.get("screen").height-300,
+        width: Dimensions.get("screen").width,
+        height: Dimensions.get("screen").height - 300,
         marginVertical: 32,
     },
     text: {
@@ -92,6 +125,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginHorizontal: 60
     },
+    buttonCircle: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'rgba(0, 0, 0, .2)',
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
 });
 
 export default Tips;

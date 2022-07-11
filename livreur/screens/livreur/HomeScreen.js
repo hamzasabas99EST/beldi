@@ -36,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
 
                 if (latitudeL && longitudeL) {
                     SetCoords(latitudeL, longitudeL)
-                } else getLivreurLocation(coordsLivreur)
+                }else getLivreurLocation(coordsLivreur)
 
 
 
@@ -90,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
             latitudeDelta: 0.5,
             longitudeDelta: 0.5
         })
-        refMap.current.animateCamera({
+        refMap.current?.animateCamera({
             center: {
                 latitude: lat,
                 longitude: long,
@@ -114,21 +114,21 @@ const HomeScreen = ({ navigation }) => {
                     style={{ flex: 1 }}
                     ref={refMap}
 
-
-                //  onPress={e=>console.log(e.nativeEvent.coordinate)}
+              //    onPress={e=>console.log(e.nativeEvent.coordinate)}
                 >
                     {coordsLivreur && <Marker coordinate={coordsLivreur} >
-                        <Image source={require("../../assets/livreur.png")} resizeMode="center"/>
+                        <Image source={require("../../assets/livreur.png")} resizeMode="center" />
 
                     </Marker>}
 
                     {commandes.map(commande => {
                         let image = ""
-                        if (commande.status == "taken") image = require("../../assets/taken.png")
-                        if (commande.status == "processing") image = require("../../assets/processing.png")
-                        else if (commande.status == "on the road") image = require("../../assets/road.png")
-
-
+                        switch (commande.status) {
+                            case "taken": image = require("../../assets/taken.png"); break;
+                            case "processing": image = require("../../assets/processing.png"); break;
+                            case "on the road": image = require("../../assets/road.png"); break;
+                            case "payed": image = require("../../assets/delivered.png"); break;
+                        }
 
                         return (
                             <Marker
@@ -145,10 +145,8 @@ const HomeScreen = ({ navigation }) => {
 
                                 <Image source={image} />
 
-
-
                                 <Callout tooltip key={commande._id}>
-                                    <Pressable onPress={() => navigation.push('Details', { "id": commande._id, "name": commande.client.name })}>
+                                    <Pressable onPress={() => navigation.push('Details', { "id": commande._id,"name": commande.client.name, "status": commande.status })}>
                                         <View style={style.Container}>
                                             <Text>{commande.client.name}</Text>
                                             <Icon

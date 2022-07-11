@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { CheckBox } from 'react-native-elements'
 import { FancyAlert } from 'react-native-expo-fancy-alerts';
 import axios from 'axios';
@@ -11,16 +11,22 @@ const DetailsDileveryScreen = ({ route }) => {
     const [Total, setTotal] = useState(0)
     const [payed, setPayed] = useState(false)
     const [loading, setIsLoading] = useState(false)
+    const [statusUpdate,setStatusUpdate]=useState("")
+
     let { name } = route.params
     let { id } = route.params
+    let { status } = route.params
 
 
 
 
     useEffect(() => {
         getDetails()
-        //console.log(route.params?.id)
-    }, [])
+       if(status!=null){
+        setStatusUpdate(status)
+       }
+
+    }, [status])
 
 
 
@@ -42,16 +48,17 @@ const DetailsDileveryScreen = ({ route }) => {
                 .then(res => {
                     let feltred = details.map(item => {
                         if (item._id === id)
-                            return { ...item, isReady: res.data }
+                            return { ...item, isReady: res.data.ready }
                         return item
                     })
-
                     setDetails(feltred)
+                    setStatusUpdate(res.data.status)
                 })
                 .catch(err => console.log(err.response))
         }
 
     }
+
     const Item = ({ ligne }) => {
         return (
 
@@ -67,7 +74,7 @@ const DetailsDileveryScreen = ({ route }) => {
                     />
 
                     <View style={{ marginTop: 5 }}>
-                        <Text style={{ fontSize: 20 }}>{ligne.plat.name}</Text>
+                        <Text style={{ fontSize: 16 }}>{ligne.plat.name}</Text>
                         <Text style={{ marginTop: 5, color: "#f9ba07" }}>{ligne.restaurant.name}</Text>
                     </View>
 
@@ -87,14 +94,17 @@ const DetailsDileveryScreen = ({ route }) => {
         setTimeout(() => {
             axios.post(ip + `/payed/${id}`)
                 .then(res => {
-                    if (res.status == 20)
-                    setIsLoading(false)    
-                    setPayed(true)
+                    if (res.status == 200) {
+                        setIsLoading(false)
+                        setPayed(true)
+                        setStatusUpdate(res.data)
+                        
+                    }
 
                 })
                 .catch(err => console.log(err.response.data))
 
-            setTimeout(() => setPayed(false), 2000)
+            setTimeout(() =>{ setPayed(false); }, 5000)
         }, 3000)
     }
 
@@ -115,32 +125,34 @@ const DetailsDileveryScreen = ({ route }) => {
                         <Text style={styles.txt}>Subtotal</Text>
                         <Text style={styles.txt}>Delivery fee</Text>
                         <Text style={[styles.txt, { color: 'black' }]}>Total amount</Text>
+                        {statusUpdate=="payed" && <Text style={{fontSize:20,}}>delivered and paid</Text>}
                     </View>
                     <View style={styles.end}>
-                        <Text style={styles.txt}>{Total} DHs</Text>
-                        <Text style={styles.txt}>10 DHs</Text>
-                        <Text style={[styles.txt, { color: 'black' }]}>{Total + 10} DHs</Text>
+                        <Text style={styles.txt}>{Total} Mad</Text>
+                        <Text style={styles.txt}>10 Mad</Text>
+                        <Text style={[styles.txt, { color: 'black' }]}>{Total + 10} Mad</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.buttonVelid}
-                    onPress={() => paying()}
-                    disabled={isLoading}
-                >
-                    {loading ?
-                        <ActivityIndicator
-                            style={{
-                                flex: 1,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
-                            size='large'
-                            color={"white"}
-                        />
-                        :
-                        <Text style={styles.textValid}>Payed</Text>
-                    }
-                </TouchableOpacity>
+                {(statusUpdate == "on the road"  ) &&
+                    <TouchableOpacity style={styles.buttonVelid}
+                        onPress={() => paying()}
+                        disabled={loading}
+                    >
+                        {loading ?
+                            <ActivityIndicator
+                                style={{
+                                    flex: 1,
+                                    flexDirection: 'row',
+                                }}
+                                size='small'
+                                color={"white"}
+                            />
+                            :
+                            <Text style={styles.textValid}>
+                                Payed
+                            </Text>
+                        }
+                    </TouchableOpacity>}
             </View>}
 
             <FancyAlert
@@ -165,7 +177,7 @@ const DetailsDileveryScreen = ({ route }) => {
 const styles = StyleSheet.create({
     ContainerWrapper: {
         marginTop: 40,
-        padding: 20,
+        padding:15,
         paddingHorizontal: 20,
         flex: 2
     },
@@ -176,11 +188,12 @@ const styles = StyleSheet.create({
     },
     itemStyle: {
         backgroundColor: '#fff',
-        padding: 15,
+        padding: 5,
         borderRadius: 10,
         justifyContent: "space-between",
         flexDirection: "row",
-        marginBottom: 20
+        marginBottom: 20,
+        
 
     },
     itemLeft: {
@@ -192,7 +205,7 @@ const styles = StyleSheet.create({
         width: 22,
         height: 22,
         backgroundColor: "#000",
-        marginRight: 15,
+        marginRight: 10,
         alignItems: "center",
         padding: 2
     },
@@ -214,8 +227,8 @@ const styles = StyleSheet.create({
         padding: 15,
         width: Dimensions.get('window').width - 20,
         alignSelf: 'center',
-        marginBottom: 20,
-        marginTop: 50,
+        marginBottom: 50,
+        marginTop: 30,
         backgroundColor: 'white',
         shadowColor: "#000",
         shadowOffset: {
@@ -230,9 +243,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9ba07',
         alignItems: 'center',
         width: 140,
+        height: 35,
         paddingTop: 8,
         paddingBottom: 8,
-        marginTop: 50,
+        marginTop: 80,
         borderRadius: 20,
         alignSelf: 'flex-end'
     },

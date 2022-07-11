@@ -76,6 +76,8 @@ const affecterCommande = async () => {
     "status": "waiting"
   }).skip(random).populate("client", ["latitude", "longitude"])
 
+//  console.log(commande)
+
 
 
   if (commande) {
@@ -104,7 +106,7 @@ const affecterCommande = async () => {
 
 
           }
-        } else console.log("no data")
+        } //else console.log("no data")
 
 
 

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import axios from 'axios';
 import ip from '../../helpers/ip';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Icon } from 'native-base';
-import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import DetailModal from '../../component/DetailModal';
 
 

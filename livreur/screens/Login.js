@@ -86,9 +86,7 @@ const Login = props => {
                     />
                 </View>
 
-                {/*Mot de passse oublié*/}
-                <Text style={styles.forgot} >Forgot Password?</Text>
-
+             
                 {/*Button sign IN normal*/}
 
                 <Pressable style={styles.btnSignIn} onPress={signIn} disabled={isLoaded}>
@@ -117,7 +115,7 @@ const styles = StyleSheet.create({
     },
     reg: {
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 26
     },
     icon: {
         width: 20,
